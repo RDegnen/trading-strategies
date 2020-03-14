@@ -1,9 +1,9 @@
 /**
  * Calculate the Exponential Moving Average
- * @param {object[]} list list of Simple Moving Averages
  * @param {number} weightedMultiplier Multiplier to calculate ema with
+ * @param {object[]} list list of Simple Moving Averages
  */
-function calculateEma(list, weightedMultiplier) {
+function calculateEma(weightedMultiplier, list) {
   let previousEma = list[0].y
   return list.map(({x, y}, idx) => {
     if (idx > 0) {

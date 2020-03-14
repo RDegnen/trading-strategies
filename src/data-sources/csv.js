@@ -27,8 +27,8 @@ function parseCsv(file) {
       smaWindows.forEach(window => {
         const weightedMultiplier = 2 / (window + 1)
 
-        const smaList = sma(pricesList, window)
-        const emaList = ema(smaList, weightedMultiplier)
+        const smaList = sma(window, pricesList)
+        const emaList = ema(weightedMultiplier, smaList)
         data[`${window} day EMA`] = emaList
       })
 

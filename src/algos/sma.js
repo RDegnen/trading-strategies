@@ -1,9 +1,9 @@
 /**
  * Calculates the Simple Moving Average
- * @param {object[]} list List of price objects
  * @param {*} smaWindow Lenght of time to group averages by
+ * @param {object[]} list List of price objects
  */
-function calculateSma(list, smaWindow) {
+function calculateSma(smaWindow, list) {
   const smaList = []
   const smaWindowList = []
 
