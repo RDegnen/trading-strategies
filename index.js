@@ -12,7 +12,9 @@ async function main() {
       if (process.argv[3] === 'write') {
         await dataSources.cryptoCompare()
       } else if (process.argv[3] === 'read') {
-        parsers.cryptoCompare()
+        const windows = [13,34,89]
+        parsers.cryptoCompare(windows)
+        parsers.technicalIndicators(windows)
       }
       break
     default:

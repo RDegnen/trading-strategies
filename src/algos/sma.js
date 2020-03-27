@@ -5,18 +5,14 @@
  */
 function calculateSma(smaWindow, list) {
   const smaList = []
-  const smaWindowList = []
 
-  for(let i = 0; i < list.length; i += smaWindow) {
-    smaWindowList.push(list.slice(i, i + smaWindow))
+  for(let i = 0; i < list.length; i++) {
+    const j = i + smaWindow
+    const avg = list.slice(i, j)
+      .reduce((acc, curr) => acc + curr.y, 0)
+      / smaWindow
+    smaList.push({ x: list[i].x, y: avg })
   }
-
-  smaWindowList.forEach(windowList => {
-    const sma = windowList.reduce((acc, curr) => {
-      return acc + parseFloat(curr.y)
-    }, 0) / smaWindow
-    smaList.push({ y: sma, x: windowList[0].x })
-  })
 
   return smaList
 }

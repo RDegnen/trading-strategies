@@ -11,7 +11,8 @@
   "dependencies": {
     "@fast-csv/parse": "^4.1.1",
     "dotenv": "^8.2.0",
-    "ramda": "^0.27.0"
+    "ramda": "^0.27.0",
+    "technicalindicators": "^3.1.0"
   },
   "devDependencies": {
     "eslint": "^6.8.0"
