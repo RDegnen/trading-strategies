@@ -1,7 +1,5 @@
 const https = require('https')
 const { CRYPTO_COMPARE_HOSTNAME } = require('./constants')
-const db = require('../db')
-const { compose, curry } = require('ramda')
 
 function cryptoCompareRequest() {
   return new Promise((resolve, reject) => {
@@ -24,10 +22,8 @@ function cryptoCompareRequest() {
 }
 
 async function cryptoCompare() {
-  compose(
-    curry(db.write)('db.json'),
-    JSON.parse
-  )(await cryptoCompareRequest())
+  const data = await cryptoCompareRequest()
+  return JSON.parse(data)
 }
 
 module.exports = cryptoCompare
