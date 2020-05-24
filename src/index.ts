@@ -1,8 +1,8 @@
-import { coinSelector } from "./lib/strategies/market-making"
+import marketMaker from "./lib/strategies/market-making"
 
 (async function main() {
   try {
-    await coinSelector()
+    await marketMaker()
   } catch (err) {
     console.log(err)
   }

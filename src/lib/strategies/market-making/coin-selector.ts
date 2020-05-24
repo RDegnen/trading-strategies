@@ -117,7 +117,9 @@ export default class CoinSelector {
     return requests
   }
 
-  private transformCandleData({ data, symbol }: TransformedCandleDataInput): TransformedCandleData {
+  private transformCandleData(
+    { data, symbol }: TransformedCandleDataInput
+  ): TransformedCandleData {
     return {
       symbol,
       data: data.map((candleStickResult: CandleChartArrayResult) => ({
