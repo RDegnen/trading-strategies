@@ -78,3 +78,20 @@ export enum CandleChartInterval {
   ONE_WEEK = '1w',
   ONE_MONTH = '1M'
 }
+
+export type WalletCurrencyInfo = {
+  coin: string,
+  depositAllEnable: boolean,
+  free: string,
+  freeze: string,
+  ipoable: string,
+  ipoing: string,
+  isLegalMoney: boolean,
+  locked: string,
+  name: string,
+  networkList: any,
+  storage: string,
+  trading: boolean,
+  withdrawAllEnable: boolean,
+  withdrawing: string
+}

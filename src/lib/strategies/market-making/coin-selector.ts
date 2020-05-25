@@ -1,4 +1,3 @@
-import { HttpClientInterface } from "../../data/http-client"
 import { AxiosResponse, AxiosRequestConfig } from "axios"
 import { 
   BidAskPrice,
@@ -17,6 +16,7 @@ import {
   TransformedCandleDataInput, 
   TransformedCandleData 
 } from "./types"
+import { HttpClientInterface } from "../../data/interfaces"
 
 export default class CoinSelector {
   httpClient: HttpClientInterface
@@ -63,7 +63,8 @@ export default class CoinSelector {
         
     const coinsToTrade: string[] = []
     resolvedCandleStickData.forEach(({ data, symbol }) => {
-      if (this.calculateIfChartIsRanging(data, 30) < 25) {
+      console.log(this.calculateIfChartIsRanging(data, 14), symbol)
+      if (this.calculateIfChartIsRanging(data, 14) < 25) {
         coinsToTrade.push(symbol)
       }
     })

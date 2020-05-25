@@ -1,3 +1,4 @@
+require('dotenv').config()
 import marketMaker from "./lib/strategies/market-making"
 
 (async function main() {

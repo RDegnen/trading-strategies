@@ -1,17 +1,14 @@
 import axios, { AxiosResponse, AxiosRequestConfig } from 'axios'
+import { HttpClientInterface } from './interfaces'
 
-interface HttpClientInterface {
-  request(config: AxiosRequestConfig): Promise<AxiosResponse>
-}
-
-export default class HttpClient implements HttpClientInterface {
+export default abstract class HttpClient implements HttpClientInterface {
   BASE: string
 
   constructor(baseUrl: string) {
     this.BASE = baseUrl
   }
 
-  public request(config: AxiosRequestConfig): Promise<AxiosResponse> {
+  request(config: AxiosRequestConfig): Promise<AxiosResponse> {
     return new Promise((resolve, reject) => {
       axios({
         baseURL: this.BASE,
@@ -20,8 +17,6 @@ export default class HttpClient implements HttpClientInterface {
         .catch(reject)
     })
   }
-}
 
-export {
-  HttpClientInterface
+  abstract privateRequest(config: AxiosRequestConfig): Promise<AxiosResponse>
 }
