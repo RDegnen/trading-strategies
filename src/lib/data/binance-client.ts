@@ -19,7 +19,8 @@ export default class BinanceClient extends HttpClient {
             ...config,
             baseURL: this.BASE,
             headers: {
-              'X-MBX-APIKEY': process.env.BINANCE_US_KEY
+              'X-MBX-APIKEY': process.env.BINANCE_US_KEY,
+              ...config["headers"]
             },
             params: {
               ...queryParams,

@@ -76,7 +76,7 @@ export default class CoinSelector {
     return compose(
       this.filterOutDirtCheapCoins,
       this.filterOutExpensiveCoins,
-      this.filterOutNonBTC
+      //this.filterOutNonBTC
     ).call(this, prices)
   }
 

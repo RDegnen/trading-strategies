@@ -1,6 +1,7 @@
 import CoinSelector from "./coin-selector";
 import RiskManager from "../../risk-manager";
 import BinanceClient from "../../data/binance-client";
+import WebSocketClient from "../../data/websocket-client";
 
 export default async function marketMaker() {
   const httpClient = new BinanceClient('https://api.binance.us')
@@ -13,6 +14,11 @@ export default async function marketMaker() {
   const coins = await selector.findCoins()
   console.log(coins)
 
-  const riskManager = new RiskManager(httpClient, 0.1)
+  const riskManager = new RiskManager(httpClient, .1)
   console.log(await riskManager.caclulateOrderAmount('BTC'))
+
+  const socket = new WebSocketClient('wss://stream.binance.us:9443/ws/vetusdt@depth')
+  socket.onMessage(data => {
+    console.log(data)
+  })
 }

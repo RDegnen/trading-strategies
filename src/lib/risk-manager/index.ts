@@ -16,6 +16,6 @@ export default class RiskManager {
     })).data
 
     const coin = allCoinInfo.find((currency: WalletCurrencyInfo) => currency.coin === symbol)
-    return parseFloat(coin.free) / this.riskPercent
+    return parseFloat(coin.free) * this.riskPercent
   }
 }
