@@ -95,3 +95,13 @@ export type WalletCurrencyInfo = {
   withdrawAllEnable: boolean,
   withdrawing: string
 }
+
+export type DiffDepthStream = {
+  e: string,
+  E: number,
+  s: string,
+  U: number,
+  u: number,
+  b: string[][],
+  a: string[][]
+}

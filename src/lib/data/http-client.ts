@@ -1,7 +1,7 @@
 import axios, { AxiosResponse, AxiosRequestConfig } from 'axios'
-import { HttpClientInterface } from './interfaces'
+import { IHttpClient } from './interfaces'
 
-export default abstract class HttpClient implements HttpClientInterface {
+export default abstract class HttpClient implements IHttpClient {
   BASE: string
 
   constructor(baseUrl: string) {

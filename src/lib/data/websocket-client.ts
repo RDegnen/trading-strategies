@@ -1,6 +1,7 @@
 import WS from 'ws'
+import { IWebSocketClient } from './interfaces'
 
-export default class WebSocketClient {
+export default class WebSocketClient implements IWebSocketClient {
   private client: WS
   private pingTimeout!: NodeJS.Timeout
 

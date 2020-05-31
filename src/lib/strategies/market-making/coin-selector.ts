@@ -16,16 +16,16 @@ import {
   TransformedCandleDataInput, 
   TransformedCandleData 
 } from "./types"
-import { HttpClientInterface } from "../../data/interfaces"
+import { IHttpClient } from "../../data/interfaces"
 
 export default class CoinSelector {
-  httpClient: HttpClientInterface
+  httpClient: IHttpClient
   maxBidPrice: number
   orderBookDepth: number
   amountOfCoinsToTrade: number
 
   constructor(
-    http: HttpClientInterface,
+    http: IHttpClient,
     bidPrice: number,
     depth: number,
     coinAmount: number

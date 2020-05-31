@@ -1,11 +1,11 @@
 import { WalletCurrencyInfo } from "../binance-types"
-import { HttpClientInterface } from '../data/interfaces'
+import { IHttpClient } from '../data/interfaces'
 
 export default class RiskManager {
-  httpClient: HttpClientInterface
+  httpClient: IHttpClient
   riskPercent: number
 
-  constructor(http: HttpClientInterface, risk: number) {
+  constructor(http: IHttpClient, risk: number) {
     this.httpClient = http
     this.riskPercent = risk
   }
