@@ -1,8 +1,8 @@
 import { AxiosRequestConfig, AxiosResponse } from "axios";
 
-export interface IHttpClient {
-  request(config: AxiosRequestConfig): Promise<AxiosResponse>
-  privateRequest(config: AxiosRequestConfig): Promise<AxiosResponse>
+export interface IHttpClient<T = AxiosResponse> {
+  request(config: AxiosRequestConfig): Promise<T>
+  privateRequest(config: AxiosRequestConfig): Promise<T>
 }
 
 export interface IWebSocketClient {

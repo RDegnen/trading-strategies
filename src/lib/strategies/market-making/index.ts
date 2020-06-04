@@ -2,7 +2,7 @@ import CoinSelector from "./coin-selector";
 import RiskManager from "../../risk-manager";
 import BinanceClient from "../../data/binance-client";
 import WebSocketClient from "../../data/websocket-client";
-import OrderBook from "./order-book";
+import LocalOrderBook from "../../local-order-book";
 
 export default async function marketMaker() {
   const httpClient = new BinanceClient('https://api.binance.us')
@@ -20,11 +20,9 @@ export default async function marketMaker() {
 
   const socket = new WebSocketClient('wss://stream.binance.us:9443/ws/vetusdt@depth')
 
-  const orderBook = new OrderBook(
+  const orderBook = new LocalOrderBook(
     socket,
     httpClient,
     'VETUSDT'
   )
-
-  console.log(await orderBook.getSnapshot())
 }
