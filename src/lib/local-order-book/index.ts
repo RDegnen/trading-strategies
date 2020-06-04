@@ -1,6 +1,12 @@
 import { IWebSocketClient, IHttpClient } from "../data/interfaces"
-import Book, { IOrderBook } from "./book"
+import Book from "./book"
 import { DiffDepthStream } from "../binance-types"
+
+interface IOrderBook {
+  lastUpdateId: number,
+  bids: string[][],
+  asks: string[][],
+}
 
 export default class LocalOrderBook {
   private socket: IWebSocketClient
@@ -21,14 +27,14 @@ export default class LocalOrderBook {
     this.socket.onMessage(this.onMessage.bind(this))
   }
 
-  async onMessage(incomingData: string) {
+  private async onMessage(incomingData: string) {
     const data: DiffDepthStream = JSON.parse(incomingData)
 
     if (!this.book) {
       const { lastUpdateId, bids, asks } = await this.getSnapshot()
       this.book = new Book(lastUpdateId, bids, asks)
     }
-    //console.log('asks', this.book.asks[0], 'bids', this.book.bids[0])
+    console.log('asks', this.book.sides['asks'][0], 'bids', this.book.sides['bids'][0])
     const { lastUpdateId } = this.book
 
     if (!this.updates) {
@@ -48,7 +54,7 @@ export default class LocalOrderBook {
 
   }
 
-  async getSnapshot(): Promise<IOrderBook> {
+  private async getSnapshot(): Promise<IOrderBook> {
     return (await this.httpClient.request({
       url: '/api/v3/depth',
       params: {
@@ -58,18 +64,18 @@ export default class LocalOrderBook {
     })).data
   }
 
-  processUpdates(data: DiffDepthStream) {
+  private processUpdates(data: DiffDepthStream) {
     data.b.forEach(bid => {
-      this.manageBids('bids', bid)
+      this.manageBook('bids', bid)
     })
     data.a.forEach(ask => {
-      this.manageAsks('asks', ask)
+      this.manageBook('asks', ask)
     })
   }
 
-  manageBids(side: string, update: string[]) {
+  private manageBook(side: string, update: string[]) {
     const [price, quantity] = update
-    const sideList = this.book.getSide(side)
+    const sideList = this.book.sides[side]
 
     for (let i = 0; i < sideList.length; i++) {
       const value = sideList[i]
@@ -81,7 +87,7 @@ export default class LocalOrderBook {
           this.book.updateSide(side, i, 1, update)
           break
         }
-      } else if (price > value[0]) {
+      } else if (this.priceComparator(side, price, value[0])) {
         if (parseFloat(quantity) !== 0) {
           this.book.updateSide(side, i, 0, update)
           break
@@ -92,28 +98,16 @@ export default class LocalOrderBook {
     }
   }
 
-  manageAsks(side: string, update: string[]) {
-    const [price, quantity] = update
-    const sideList = this.book.getSide(side)
-
-    for (let i = 0; i < sideList.length; i++) {
-      const value = sideList[i]
-      if (price === value[0]) {
-        if (parseFloat(quantity) === 0) {
-          this.book.removePrice(side, i)
-          break
-        } else {
-          this.book.updateSide(side, i, 1, update)
-          break
-        }
-      } else if (price < value[0]) {
-        if (parseFloat(quantity) !== 0) {
-          this.book.updateSide(side, i, 0, update)
-          break
-        } else {
-          break
-        }
-      }
+  private priceComparator(
+    side: string,
+    updatedPrice: string,
+    currentPrice: string
+  ): boolean {
+    if (side === 'asks') {
+      return updatedPrice < currentPrice
+    } else if (side === 'bids') {
+      return updatedPrice > currentPrice
     }
+    return false
   }
 }

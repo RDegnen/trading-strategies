@@ -8,7 +8,7 @@ import { EventEmitter } from 'events'
 import { sleep } from '../helpers/utils'
 
 describe('LocalOrderBook', () => {
-  const timeout = 500
+  const timeout = 100
   const emitter = new EventEmitter()
   const webSocketClient: IWebSocketClient = new MockWebSocketClient(emitter)
   const httpClient: IHttpClient = new MockHttpClient()
@@ -57,7 +57,7 @@ describe('LocalOrderBook', () => {
     )
 
     await sleep(timeout)
-    const [price, quantity] = testOrderBook.book.bids[0]
+    const [price, quantity] = testOrderBook.book.sides['bids'][0]
 
     expect(price).to.equal('10.1')
     expect(quantity).to.equal('12345')
@@ -80,7 +80,7 @@ describe('LocalOrderBook', () => {
     )
 
     await sleep(timeout)
-    const [price, quantity] = testOrderBook.book.asks[0]
+    const [price, quantity] = testOrderBook.book.sides['asks'][0]
 
     expect(price).to.equal('10.9')
     expect(quantity).to.equal('1000')
@@ -103,14 +103,14 @@ describe('LocalOrderBook', () => {
     )
 
     await sleep(timeout)
-    const [askPrice] = testOrderBook.book.asks[0]
-    const [bidPrice] = testOrderBook.book.bids[0]
+    const [askPrice] = testOrderBook.book.sides['asks'][0]
+    const [bidPrice] = testOrderBook.book.sides['bids'][0]
 
     expect(askPrice).to.equal('11')
     expect(bidPrice).to.equal('10')
   })
 
-  it("should updated an existing price's quantity", async () => {
+  it("should update an existing price's quantity", async () => {
     emitter.emit(
       'data',
       [
@@ -127,8 +127,8 @@ describe('LocalOrderBook', () => {
     )
 
     await sleep(timeout)
-    const [askPrice, askQuantity] = testOrderBook.book.asks[0]
-    const [bidPrice, bidQuantity] = testOrderBook.book.bids[0]
+    const [askPrice, askQuantity] = testOrderBook.book.sides['asks'][0]
+    const [bidPrice, bidQuantity] = testOrderBook.book.sides['bids'][0]
 
     expect(askQuantity).to.equal('100')
     expect(bidQuantity).to.equal('100')
