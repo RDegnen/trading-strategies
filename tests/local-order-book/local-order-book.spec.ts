@@ -85,4 +85,52 @@ describe('LocalOrderBook', () => {
     expect(price).to.equal('10.9')
     expect(quantity).to.equal('1000')
   })
+
+  it('should remove updated prices with a quantity of 0', async () => {
+    emitter.emit(
+      'data',
+      [
+        JSON.stringify({
+          e: 'depthUpdate',
+          E: 3,
+          s: 'SYMBOL',
+          U: 17,
+          u: 18,
+          b: [['10.1', '0']],
+          a: [['10.9', '0']]
+        })
+      ]
+    )
+
+    await sleep(timeout)
+    const [askPrice] = testOrderBook.book.asks[0]
+    const [bidPrice] = testOrderBook.book.bids[0]
+
+    expect(askPrice).to.equal('11')
+    expect(bidPrice).to.equal('10')
+  })
+
+  it("should updated an existing price's quantity", async () => {
+    emitter.emit(
+      'data',
+      [
+        JSON.stringify({
+          e: 'depthUpdate',
+          E: 3,
+          s: 'SYMBOL',
+          U: 19,
+          u: 20,
+          b: [['10', '100']],
+          a: [['11', '100']]
+        })
+      ]
+    )
+
+    await sleep(timeout)
+    const [askPrice, askQuantity] = testOrderBook.book.asks[0]
+    const [bidPrice, bidQuantity] = testOrderBook.book.bids[0]
+
+    expect(askQuantity).to.equal('100')
+    expect(bidQuantity).to.equal('100')
+  })
 })

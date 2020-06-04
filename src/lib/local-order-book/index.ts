@@ -67,10 +67,6 @@ export default class LocalOrderBook {
     })
   }
 
-  // FIXME something is fishy, try testing ask updates with [ [ '0.00762900', '306229.00000000' ] ] 
-  // vs [ '0.00772200', '13093.00000000' ] where the former should be the first one in the asks column
-  // AFTER more obeservation, the asks column looks like its updating wrong. higher values are taking 
-  // precedence over lower values which is fine for the bids, but not the asks.
   manageBids(side: string, update: string[]) {
     const [price, quantity] = update
     const sideList = this.book.getSide(side)
