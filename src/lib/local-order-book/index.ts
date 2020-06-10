@@ -25,16 +25,21 @@ export default class LocalOrderBook {
     this.symbol = sym
 
     this.socket.onMessage(this.onMessage.bind(this))
+    this.createBook()
+  }
+
+  private async createBook() {
+    const { lastUpdateId, bids, asks } = await this.getSnapshot()
+    this.book = new Book(lastUpdateId, bids, asks)
   }
 
   private async onMessage(incomingData: string) {
     const data: DiffDepthStream = JSON.parse(incomingData)
 
     if (!this.book) {
-      const { lastUpdateId, bids, asks } = await this.getSnapshot()
-      this.book = new Book(lastUpdateId, bids, asks)
+      await this.createBook()
     }
-    console.log('asks', this.book.sides['asks'][0], 'bids', this.book.sides['bids'][0])
+
     const { lastUpdateId } = this.book
 
     if (!this.updates) {
@@ -42,8 +47,6 @@ export default class LocalOrderBook {
         this.processUpdates(data)
         this.book.lastUpdateId = data.u
         this.updates += 1
-      } else {
-        console.log('discard')
       }
     } else if (data.U === lastUpdateId + 1) {
       this.processUpdates(data)

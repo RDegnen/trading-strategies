@@ -1,7 +1,11 @@
 import { WalletCurrencyInfo } from "../binance-types"
 import { IHttpClient } from '../data/interfaces'
 
-export default class RiskManager {
+export interface IRiskManager {
+  caclulateOrderAmount(symbol: string): Promise<number>
+}
+
+export default class RiskManager implements IRiskManager {
   httpClient: IHttpClient
   riskPercent: number
 
@@ -10,7 +14,7 @@ export default class RiskManager {
     this.riskPercent = risk
   }
 
-  async caclulateOrderAmount(symbol: string) {
+  async caclulateOrderAmount(symbol: string): Promise<number> {
     const allCoinInfo = (await this.httpClient.privateRequest({
       url: '/sapi/v1/capital/config/getall'
     })).data
