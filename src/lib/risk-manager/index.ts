@@ -15,7 +15,7 @@ export default class RiskManager implements IRiskManager {
   }
 
   async caclulateOrderAmount(symbol: string): Promise<number> {
-    const allCoinInfo = (await this.httpClient.privateRequest({
+    const allCoinInfo = (await this.httpClient.signedRequest({
       url: '/sapi/v1/capital/config/getall'
     })).data
 

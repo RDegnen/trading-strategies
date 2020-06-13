@@ -18,5 +18,7 @@ export default abstract class HttpClient implements IHttpClient {
     })
   }
 
-  abstract privateRequest(config: AxiosRequestConfig): Promise<AxiosResponse>
+  abstract keyRequest(config: AxiosRequestConfig): Promise<AxiosResponse>
+
+  abstract signedRequest(config: AxiosRequestConfig): Promise<AxiosResponse>
 }

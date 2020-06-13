@@ -26,16 +26,16 @@ export default class Trader {
   async bid() {
     const [symbolOne, symbolTwo] = this.pair
     const fundsToRisk = await this.riskManager.caclulateOrderAmount(symbolTwo)
-    const [price, quantity] = this.localOrderBook.book.sides.bids[0]
+    const [price] = this.localOrderBook.book.sides.bids[0]
     const priceToBidAt = calculateOrderPrice(price, 1, (cp, md, pm) => cp * md + pm)
-    const quantityToBidAt = parseInt((10 / priceToBidAt).toFixed(0))
+    const quantityToBidAt = parseInt((fundsToRisk / priceToBidAt).toFixed(0))
     
     console.log(priceToBidAt, quantityToBidAt)
     // this.placeOrder('bid', priceToBidAt, quantityToBidAt, symbolOne)
   }
 
   private async placeOrder(side: string, price: number, quantity: number, symbol: string) {
-    const res = await this.httpClient.privateRequest({
+    const res = await this.httpClient.signedRequest({
       url: '/api/v3/order/test',
       method: 'POST',
       params: {

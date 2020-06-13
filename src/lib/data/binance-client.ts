@@ -3,7 +3,24 @@ import axios, { AxiosRequestConfig, AxiosResponse } from "axios"
 import { createHmac } from 'crypto'
 
 export default class BinanceClient extends HttpClient {
-  privateRequest(config: AxiosRequestConfig): Promise<AxiosResponse> {
+  keyRequest(config: AxiosRequestConfig): Promise<AxiosResponse> {
+    return new Promise((resolve, reject) => {
+      axios({
+        ...config,
+        baseURL: this.BASE,
+        headers: {
+          'X-MBX-APIKEY': process.env.BINANCE_US_KEY,
+          ...config["headers"]
+        },
+        params: {
+          ...config["params"],
+        }
+      }).then(resolve)
+        .catch(reject)
+    })
+  }
+
+  signedRequest(config: AxiosRequestConfig): Promise<AxiosResponse> {
     return new Promise((resolve, reject) => {
       this.getServerTime()
         .then(time => {

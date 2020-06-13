@@ -23,7 +23,13 @@ export default class MockHttpClient implements IHttpClient<any> {
     })
   }
 
-  privateRequest(): Promise<any> {
+  keyRequest(): Promise<any> {
+    return new Promise(resolve => {
+      resolve('nothing')
+    })
+  }
+
+  signedRequest(): Promise<any> {
     return new Promise(resolve => {
       resolve('nothing')
     })
