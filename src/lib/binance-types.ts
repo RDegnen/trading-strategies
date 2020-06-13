@@ -105,3 +105,38 @@ export type DiffDepthStream = {
   b: string[][],
   a: string[][]
 }
+
+export type OrderUpdate = {
+  e: string,        // Event type
+  E: number,            // Event time
+  s: string,                 // Symbol
+  c: string, // Client order ID
+  S: string,                    // Side
+  o: string,                  // Order type
+  f: string,                    // Time in force
+  q: string,             // Order quantity
+  p: string,             // Order price
+  P: string,             // Stop price
+  F: string,             // Iceberg quantity
+  g: number,                       // OrderListId
+  C: number,                     // Original client order ID; This is the ID of the order being canceled
+  x: string,                    // Current execution type
+  X: string,                    // Current order status
+  r: string,                   // Order reject reason; will be an error code.
+  i: number,                  // Order ID
+  l: string,             // Last executed quantity
+  z: string,             // Cumulative filled quantity
+  L: string,             // Last executed price
+  n: string,                      // Commission amount
+  N: string,                     // Commission asset
+  T: number,            // Transaction time
+  t: number,                       // Trade ID
+  I: number,                  // Ignore
+  w: boolean,                     // Is the order on the book?
+  m: boolean,                    // Is this trade the maker side?
+  M: boolean,                    // Ignore
+  O: number,            // Order creation time
+  Z: string,             // Cumulative quote asset transacted quantity
+  Y: string,             // Last quote asset transacted quantity (i.e. lastPrice * lastQty)
+  Q: string              // Quote Order Qty
+}

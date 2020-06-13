@@ -4,13 +4,12 @@ import BinanceClient from "../../data/binance-client"
 import WebSocketClient from "../../data/websocket-client"
 import LocalOrderBook from "../../local-order-book"
 import Trader from './trader'
-import OrderMonitor from '../../order-monitor'
+import AccountMonitor from '../../order-monitor'
 
 export default async function marketMaker() {
   const httpClient = new BinanceClient('https://api.binance.us')
   const riskManager = new RiskManager(httpClient, .1)
-  const orderMonitorSocket = (listenKey: string) => new WebSocketClient(`wss://stream.binance.us:9443/ws/${listenKey}`)
-  const orderMonitor = new OrderMonitor(httpClient, orderMonitorSocket)
+  const orderMonitor = new AccountMonitor(httpClient, new WebSocketClient())
   const selector = new CoinSelector(
     httpClient,
     0.010000,
@@ -21,10 +20,8 @@ export default async function marketMaker() {
   const coins = await selector.findCoins()
   //console.log(coins)
 
-  const orderBookSocket = new WebSocketClient('wss://stream.binance.us:9443/ws/vetusdt@depth')
-
   const orderBook = new LocalOrderBook(
-    orderBookSocket,
+    new WebSocketClient(),
     httpClient,
     'VETUSDT'
   )

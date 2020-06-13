@@ -2,10 +2,10 @@ import WS from 'ws'
 import { IWebSocketClient } from './interfaces'
 
 export default class WebSocketClient implements IWebSocketClient {
-  private client: WS
+  private client!: WS
   private pingTimeout!: NodeJS.Timeout
 
-  constructor(url: string) {
+  openSocket(url: string) {
     this.client = new WS(url)
 
     this.client.on('open', this.heartbeat.bind(this))

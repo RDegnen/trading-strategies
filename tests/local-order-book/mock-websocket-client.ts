@@ -6,8 +6,10 @@ export default class MockWebSocketClient implements IWebSocketClient {
 
   constructor (client: EventEmitter) {
     this.client = client
+  }
 
-    client.on('message', this.onMessage.bind(this))
+  openSocket() {
+    this.client.on('message', this.onMessage.bind(this))
   }
 
   onMessage(cb: (data: any) => any) {

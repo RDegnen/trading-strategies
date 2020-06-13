@@ -7,5 +7,6 @@ export interface IHttpClient<T = AxiosResponse> {
 }
 
 export interface IWebSocketClient {
+  openSocket(url: string): void
   onMessage(cb: Function): void
 }

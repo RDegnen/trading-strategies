@@ -1,16 +1,15 @@
 import { IHttpClient, IWebSocketClient } from '../data/interfaces'
 
-export default class OrderMonitor {
+export default class AccountMonitor {
   private httpClient: IHttpClient
-  private socketFN: (listenKey: string) => IWebSocketClient
-  private socket!: IWebSocketClient 
+  private socket: IWebSocketClient 
   private listenKey!: string
 
-  constructor(http: IHttpClient, wsFn: (listenKey: string) => IWebSocketClient) {
+  constructor(http: IHttpClient, ws: IWebSocketClient) {
     this.httpClient = http
-    this.socketFN = wsFn
+    this.socket = ws
     this.getListenKey()
-    setTimeout(() => this.renewListenKey.bind(this), 1800000)
+    setInterval(this.renewListenKey.bind(this), 1800000)
   }
 
   private async getListenKey() {
@@ -19,7 +18,8 @@ export default class OrderMonitor {
       method: 'POST'
     })
     const listenKey = data.listenKey
-    this.socket = this.socketFN(listenKey)
+    this.socket.openSocket(`wss://stream.binance.us:9443/ws/${listenKey}`)
+    this.socket.onMessage(this.onMessage.bind(this))
     this.listenKey = listenKey
   }
 
@@ -31,5 +31,10 @@ export default class OrderMonitor {
         listenKey: this.listenKey
       }
     })
+  }
+
+  private onMessage(incomingData: string) {
+    console.log('Incoming Account Info')
+    console.log(JSON.parse(incomingData))
   }
 }

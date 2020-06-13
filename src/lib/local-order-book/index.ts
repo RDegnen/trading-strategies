@@ -24,6 +24,7 @@ export default class LocalOrderBook {
     this.httpClient = http
     this.symbol = sym
 
+    this.socket.openSocket(`wss://stream.binance.us:9443/ws/${sym.toLocaleLowerCase()}@depth`)
     this.socket.onMessage(this.onMessage.bind(this))
     this.createBook()
   }
