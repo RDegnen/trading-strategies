@@ -4,7 +4,7 @@ import BinanceClient from "../../data/binance-client"
 import WebSocketClient from "../../data/websocket-client"
 import LocalOrderBook from "../../local-order-book"
 import Trader from './trader'
-import AccountMonitor from '../../order-monitor'
+import AccountMonitor from '../../account-monitor'
 
 export default async function marketMaker() {
   const httpClient = new BinanceClient('https://api.binance.us')
