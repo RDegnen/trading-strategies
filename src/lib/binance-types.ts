@@ -119,7 +119,7 @@ export type OrderUpdate = {
   P: string,             // Stop price
   F: string,             // Iceberg quantity
   g: number,                       // OrderListId
-  C: number,                     // Original client order ID; This is the ID of the order being canceled
+  C: number | null,                     // Original client order ID; This is the ID of the order being canceled
   x: string,                    // Current execution type
   X: string,                    // Current order status
   r: string,                   // Order reject reason; will be an error code.
@@ -128,7 +128,7 @@ export type OrderUpdate = {
   z: string,             // Cumulative filled quantity
   L: string,             // Last executed price
   n: string,                      // Commission amount
-  N: string,                     // Commission asset
+  N: string | null,                     // Commission asset
   T: number,            // Transaction time
   t: number,                       // Trade ID
   I: number,                  // Ignore
@@ -138,5 +138,80 @@ export type OrderUpdate = {
   O: number,            // Order creation time
   Z: string,             // Cumulative quote asset transacted quantity
   Y: string,             // Last quote asset transacted quantity (i.e. lastPrice * lastQty)
-  Q: string              // Quote Order Qty
+}
+
+export type AccountCoinInfo = {
+  coin: string,
+  depositAllEnable: boolean,
+  free: string,
+  freeze: string,
+  ipoable: string,
+  ipoing: string,
+  isLegalMoney: boolean,
+  locked: string,
+  name: string,
+  networkList: NetworkListType[],
+  storage: string,
+  trading: boolean,
+  withdrawAllEnable: boolean,
+  withdrawing: string
+}
+
+type NetworkListType = {
+  addressRegex: string,
+  coin: string,
+  depositDesc: string,
+  depositEnable: boolean,
+  isDefault: boolean,
+  memoRegex: string,
+  minConfirm: number,
+  name: string,
+  network: string,
+  resetAddressStatus: boolean,
+  specialTips: string,
+  unLockConfirm: number,
+  withdrawDesc: string,
+  withdrawEnable: boolean,
+  withdrawFee: string,
+  withdrawMin: string
+}
+
+
+export enum OrderSide {
+  BUY = 'BUY',
+  SELL = 'SELL'
+}
+
+export enum OrderType {
+  LIMIT = 'LIMIT',
+  LIMIT_MAKER = 'LIMIT_MAKER',
+  MARKET = 'MARKET',
+  STOP_LOSS = 'STOP_LOSS',
+  STOP_LOSS_LIMIT = 'STOP_LOSS_LIMIT',
+  TAKE_PROFIT = 'TAKE_PROFIT',
+  TAKE_PROFIT_LIMIT = 'TAKE_PROFIT_LIMIT',
+}
+
+export enum OrderStatus {
+  CANCELED = 'CANCELED',
+  EXPIRED = 'EXPIRED',
+  FILLED = 'FILLED',
+  NEW = 'NEW',
+  PARTIALLY_FILLED = 'PARTIALLY_FILLED',
+  PENDING_CANCEL = 'PENDING_CANCEL',
+  REJECTED = 'REJECTED'
+}
+export type OrderStatusType =
+  | 'CANCELED'
+  | 'EXPIRED'
+  | 'FILLED'
+  | 'NEW'
+  | 'PARTIALLY_FILLED'
+  | 'PENDING_CANCEL'
+  | 'REJECTED'
+
+export enum TimeInForce {
+  GOOD_TILL_CANCELED = 'GTC',
+  IMMEDIATE_OR_CANCEL = 'IOC',
+  FILL_OR_KILL = 'FOK'
 }

@@ -8,7 +8,11 @@ interface IOrderBook {
   asks: string[][],
 }
 
-export default class LocalOrderBook {
+export interface ILocalOrderBook {
+  book: Book
+}
+
+export default class LocalOrderBook implements ILocalOrderBook {
   private socket: IWebSocketClient
   private httpClient: IHttpClient
   private symbol: string

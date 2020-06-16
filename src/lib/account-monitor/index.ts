@@ -1,5 +1,10 @@
 import { IHttpClient, IWebSocketClient } from '../data/interfaces'
-import { IAccountSubject, IAccountObserver, IAccountUpdateEvent } from '../types'
+import {
+  IAccountSubject,
+  IAccountObserver,
+  IAccountUpdateEvent, 
+  AccountEventTypes 
+} from '../types'
 
 export default class AccountMonitor implements IAccountSubject {
   private httpClient: IHttpClient
@@ -18,9 +23,9 @@ export default class AccountMonitor implements IAccountSubject {
   }
 
   attach(o: IAccountObserver, eventType: string) {
-    if (eventType === 'Order') {
+    if (eventType === AccountEventTypes.ORDER) {
       this.orderObservers.push(o)
-    } else if (eventType === 'Account') {
+    } else if (eventType === AccountEventTypes.ACCOUNT) {
       this.accountObservers.push(o)
     }
   }

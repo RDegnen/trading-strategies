@@ -10,3 +10,8 @@ export interface IAccountUpdateEvent {
 export interface IAccountObserver {
   update(data: IAccountUpdateEvent): void
 }
+
+export enum AccountEventTypes {
+  ORDER = 'Order',
+  ACCOUNT = 'Account'
+}

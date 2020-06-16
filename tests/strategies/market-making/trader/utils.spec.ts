@@ -4,7 +4,7 @@ import {
   calculateOrderPrice 
 } from '../../../../src/lib/strategies/market-making/trader/utils'
 
-describe('Market maker trader utils', () => {
+describe('MarketMaker Trader utils', () => {
   it('should calculate an order price', () => {
     const bidFn = (cp: number, md: number, pm: number) => cp * md + pm
     const askFn = (cp: number, md: number, pm: number) => cp * md - pm

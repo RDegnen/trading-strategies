@@ -8,8 +8,8 @@ import AccountMonitor from '../../account-monitor'
 
 export default async function marketMaker() {
   const httpClient = new BinanceClient('https://api.binance.us')
-  const riskManager = new RiskManager(httpClient, .1)
-  const orderMonitor = new AccountMonitor(httpClient, new WebSocketClient())
+  const riskManager = new RiskManager(httpClient)
+  const accountMonitor = new AccountMonitor(httpClient, new WebSocketClient())
   const selector = new CoinSelector(
     httpClient,
     0.010000,
@@ -30,8 +30,9 @@ export default async function marketMaker() {
     orderBook,
     httpClient,
     riskManager,
+    accountMonitor,
     ['VET', 'USDT']
   )
 
-  trader.bid()
+  // trader.bid()
 }
