@@ -3,22 +3,24 @@ import { expect } from 'chai'
 import { 
   calculateOrderPrice 
 } from '../../../../src/lib/strategies/market-making/trader/utils'
+import { SymbolPriceFilter } from '../../../../src/lib/binance-types'
 
 describe('MarketMaker Trader utils', () => {
-  it('should calculate an order price', () => {
-    const bidFn = (cp: number, md: number, pm: number) => cp * md + pm
-    const askFn = (cp: number, md: number, pm: number) => cp * md - pm
+  const bidFn = (priceMove: number) => (temp: number) => temp + priceMove
+  const askFn = (priceMove: number) => (temp: number) => temp - priceMove
 
-    expect(calculateOrderPrice('0.007762', 1, bidFn)).to.equal(0.007763)
-    expect(calculateOrderPrice('0.007762', 8, bidFn)).to.equal(0.00777)
-    expect(calculateOrderPrice('0.00000002', 1, bidFn)).to.equal(0.00000003)
-    expect(calculateOrderPrice('0.1', 1, bidFn)).to.equal(0.2)
-    expect(calculateOrderPrice('0.5', 5, bidFn)).to.equal(1.0)
+  it('should calculate an order price with a ticksize of 0.00000100', () => {
+    const priceFilter: SymbolPriceFilter = {
+      filterType: 'PRICE_FILTER',
+      minPrice: '0.00000100',
+      maxPrice: '1000.00000000',
+      tickSize: '0.00000100'
+    }
 
-    expect(calculateOrderPrice('0.007762', 1, askFn)).to.equal(0.007761)
-    expect(calculateOrderPrice('0.007762', 8, askFn)).to.equal(0.007754)
-    expect(calculateOrderPrice('0.00000005', 1, askFn)).to.equal(0.00000004)
-    expect(calculateOrderPrice('0.2', 1, askFn)).to.equal(0.1)
-    expect(calculateOrderPrice('0.10', 1, askFn)).to.equal(0.09)
+    expect(calculateOrderPrice('0.00993300', priceFilter, bidFn(1))).to.equal(0.009934)
+    expect(calculateOrderPrice('0.00993300', priceFilter, bidFn(7))).to.equal(0.009940)
+
+    expect(calculateOrderPrice('0.00993300', priceFilter, askFn(1))).to.equal(0.009932)
+    expect(calculateOrderPrice('0.00993300', priceFilter, askFn(4))).to.equal(0.009929)
   })
 })

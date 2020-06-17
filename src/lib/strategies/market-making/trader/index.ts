@@ -10,17 +10,18 @@ import {
 import { 
   OrderUpdate,
   OrderSide,
-  OrderType,
+  OrderTypeEnum,
   TimeInForce,
   OrderStatus,
-  OrderStatusType
+  OrderStatusType,
+  BinanceSymbol,
+  SymbolPriceFilter
 } from "../../../binance-types"
-import { remove } from "ramda"
+import { remove, filter } from "ramda"
 
 type symbolPair = [string, string]
 type openOrdersType = {
-  i: number,
-  X: OrderStatusType
+  i: number
 }
 
 export default class Trader implements IAccountObserver {
@@ -52,20 +53,46 @@ export default class Trader implements IAccountObserver {
     const [symbolOne, symbolTwo] = this.pair
     const fundsToRisk = await this.riskManager.caclulateOrderAmount(symbolTwo, .1)
     const [price] = this.localOrderBook.book.sides.bids[0]
-    const priceToBidAt = calculateOrderPrice(price, 1, (cp, md, pm) => cp * md + pm)
-    const quantityToBidAt = parseInt((fundsToRisk / priceToBidAt).toFixed(0))
+    const symbolInfo = await this.getSymbolInfo()
+    const fn = (priceMove: number) => (temp: number) => temp + priceMove
+    const priceFilter = symbolInfo.filters.find(filter => {
+      return filter.filterType === 'PRICE_FILTER'
+    })
+    if (priceFilter && 'tickSize' in priceFilter) {
+      const priceToBidAt = calculateOrderPrice(price, priceFilter, fn(1))
+      const quantityToBidAt = parseInt((fundsToRisk / priceToBidAt).toFixed(0))
     
-    // console.log(priceToBidAt, quantityToBidAt)
-    this.placeOrder(OrderSide.BUY, priceToBidAt, quantityToBidAt, this.pair.join(''))
+      console.log(OrderSide.BUY, priceToBidAt, quantityToBidAt, this.pair.join(''))
+      this.placeOrder(OrderSide.BUY, priceToBidAt, quantityToBidAt, this.pair.join(''))
+    }
   }
 
   async ask() {
     const [symbolOne] = this.pair
     const [price] = this.localOrderBook.book.sides.asks[0]
-    const priceToAskFor = calculateOrderPrice(price, 1, (cp, md, pm) => cp * md - pm)
-    const quantityToAskFor = await this.riskManager.caclulateOrderAmount(symbolOne, 1)
+    const symbolInfo = await this.getSymbolInfo()
+    const fn = (priceMove: number) => (temp: number) => temp - priceMove
+    const priceFilter = symbolInfo.filters.find(filter => {
+      return filter.filterType === 'PRICE_FILTER'
+    })
+    if (priceFilter && 'tickSize' in priceFilter) {
+      const priceToAskFor = calculateOrderPrice(price, priceFilter, fn(1))
+      const quantityToAskFor = await this.riskManager.caclulateOrderAmount(symbolOne, 1)
+      this.placeOrder(OrderSide.SELL, priceToAskFor, quantityToAskFor, this.pair.join(''))
+    }
+  }
 
-    this.placeOrder(OrderSide.SELL, priceToAskFor, quantityToAskFor, this.pair.join(''))
+  private async getSymbolInfo(): Promise<BinanceSymbol> {
+    const [symbolOne, symbolTwo] = this.pair
+    const allSymbols = (await this.httpClient.request({
+      url: '/api/v3/exchangeInfo'
+    })).data.symbols
+    
+    return allSymbols.find((sym: BinanceSymbol) => {
+      if (sym.baseAsset === symbolOne && sym.quoteAsset === symbolTwo) {
+        return sym
+      }
+    })
   }
 
   async update(data: OrderUpdate) {
@@ -87,19 +114,23 @@ export default class Trader implements IAccountObserver {
   }
 
   private async placeOrder(side: string, price: number, quantity: number, symbol: string) {
-    const res = (await this.httpClient.signedRequest({
-      url: '/api/v3/order/test',
-      method: 'POST',
-      params: {
-        side,
-        price,
-        quantity,
-        symbol: symbol,
-        type: OrderType.LIMIT,
-        timeInForce: TimeInForce.GOOD_TILL_CANCELED
-      }
-    })).data
-    
-    this.openOrders.push({ i: res.orderId, X: res.status })
+    try {
+      const res = (await this.httpClient.signedRequest({
+        url: '/api/v3/order/test',
+        method: 'POST',
+        params: {
+          side,
+          price,
+          quantity,
+          symbol: symbol,
+          type: OrderTypeEnum.LIMIT,
+          timeInForce: TimeInForce.GOOD_TILL_CANCELED
+        }
+      })).data
+      console.log(res)
+      this.openOrders.push({ i: res.orderId })
+    } catch (err) {
+      console.log(err.response.data)
+    }
   }
 }

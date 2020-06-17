@@ -31,14 +31,14 @@ describe('MarketMaker Trader', () => {
       method: 'POST',
       params: {
         side: 'BUY',
-        price: 0.011,
-        quantity: 909,
+        price: 0.00101,
+        quantity: 9901,
         symbol: 'VETUSDT',
         type: 'LIMIT',
         timeInForce: 'GTC'
       }
     })
-    expect(testTrader['openOrders'][0]).to.eql({ i: 1, X: 'NEW' })
+    expect(testTrader['openOrders'][0]).to.eql({ i: 1 })
   })
 
   it('should place a sell order when an open buy order is filled', async () => {
@@ -83,13 +83,13 @@ describe('MarketMaker Trader', () => {
       method: 'POST',
       params: {
         side: 'SELL',
-        price: 0.012,
+        price: 0.001009,
         quantity: 100,
         symbol: 'VETUSDT',
         type: 'LIMIT',
         timeInForce: 'GTC'
       }
     })
-    expect(testTrader['openOrders'][0]).to.eql({ i: 2, X: 'NEW' })
+    expect(testTrader['openOrders'][0]).to.eql({ i: 2 })
   })
 })

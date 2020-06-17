@@ -1,4 +1,4 @@
-export type Ticker = {
+export interface Ticker {
   eventType: string,
   eventTime: number,
   symbol: string,
@@ -24,7 +24,7 @@ export type Ticker = {
   totalTrades: number
 }
 
-export type BidAskPrice = {
+export interface BidAskPrice {
   symbol: string,
   bidPrice: string,
   bidQty: string,
@@ -33,7 +33,7 @@ export type BidAskPrice = {
 }
 
 
-export type CandleChartResult = {
+export interface CandleChartResult {
   openTime: number,
   open: string,
   high: string,
@@ -79,7 +79,7 @@ export enum CandleChartInterval {
   ONE_MONTH = '1M'
 }
 
-export type WalletCurrencyInfo = {
+export interface WalletCurrencyInfo {
   coin: string,
   depositAllEnable: boolean,
   free: string,
@@ -96,7 +96,7 @@ export type WalletCurrencyInfo = {
   withdrawing: string
 }
 
-export type DiffDepthStream = {
+export interface DiffDepthStream {
   e: string,
   E: number,
   s: string,
@@ -106,7 +106,7 @@ export type DiffDepthStream = {
   a: string[][]
 }
 
-export type OrderUpdate = {
+export interface OrderUpdate {
   e: string,        // Event type
   E: number,            // Event time
   s: string,                 // Symbol
@@ -140,7 +140,7 @@ export type OrderUpdate = {
   Y: string,             // Last quote asset transacted quantity (i.e. lastPrice * lastQty)
 }
 
-export type AccountCoinInfo = {
+export interface AccountCoinInfo {
   coin: string,
   depositAllEnable: boolean,
   free: string,
@@ -157,7 +157,7 @@ export type AccountCoinInfo = {
   withdrawing: string
 }
 
-type NetworkListType = {
+interface NetworkListType {
   addressRegex: string,
   coin: string,
   depositDesc: string,
@@ -176,13 +176,103 @@ type NetworkListType = {
   withdrawMin: string
 }
 
+export type ExchangeFilterType =
+| 'EXCHANGE_MAX_NUM_ORDERS'
+| 'EXCHANGE_MAX_ALGO_ORDERS';
+
+export interface ExchangeFilter {
+filterType: ExchangeFilterType;
+limit: number;
+}
+
+export type SymbolFilterType =
+| 'PRICE_FILTER'
+| 'PERCENT_PRICE'
+| 'LOT_SIZE'
+| 'MIN_NOTIONAL'
+| 'MAX_NUM_ORDERS'
+| 'MAX_ALGO_ORDERS';
+
+export interface SymbolPriceFilter {
+  filterType: SymbolFilterType,
+  minPrice: string;
+  maxPrice: string;
+  tickSize: string;
+}
+
+export interface SymbolPercentPriceFilter {
+  filterType: SymbolFilterType,
+  multiplierDown: string;
+  multiplierUp: string;
+  avgPriceMins: number;
+}
+
+export interface SymbolLotSizeFilter {
+  filterType: SymbolFilterType,
+  minQty: string;
+  maxQty: string;
+  stepSize: string;
+}
+
+export interface SymbolMinNotionalFilter {
+  applyToMarket: boolean;
+  avgPriceMins: number;
+  filterType: SymbolFilterType;
+  minNotional: string;
+}
+
+export interface SymbolMaxNumOrdersFilter {
+  filterType: SymbolFilterType;
+  limit: number;
+}
+
+export interface SymbolMaxAlgoOrdersFilter {
+  filterType: SymbolFilterType;
+  limit: number;
+}
+
+export type SymbolFilter =
+  | SymbolPriceFilter
+  | SymbolPercentPriceFilter
+  | SymbolLotSizeFilter
+  | SymbolMinNotionalFilter
+  | SymbolMaxNumOrdersFilter
+  | SymbolMaxAlgoOrdersFilter;
+
+export interface BinanceSymbol {
+  baseAsset: string;
+  baseAssetPrecision: number;
+  baseCommissionPrecision: number;
+  filters: SymbolFilter[];
+  icebergAllowed: boolean;
+  isMarginTradingAllowed: boolean;
+  isSpotTradingAllowed: boolean;
+  ocoAllowed: boolean;
+  orderTypes: OrderType[];
+  quoteAsset: string;
+  quoteCommissionPrecision: number;
+  quoteOrderQtyMarketAllowed: boolean;
+  quotePrecision: number;
+  status: string;
+  symbol: string;
+}
+
 
 export enum OrderSide {
   BUY = 'BUY',
   SELL = 'SELL'
 }
 
-export enum OrderType {
+export type OrderType =
+  | 'LIMIT'
+  | 'LIMIT_MAKER'
+  | 'MARKET'
+  | 'STOP_LOSS'
+  | 'STOP_LOSS_LIMIT'
+  | 'TAKE_PROFIT'
+  | 'TAKE_PROFIT_LIMIT'
+
+export enum OrderTypeEnum {
   LIMIT = 'LIMIT',
   LIMIT_MAKER = 'LIMIT_MAKER',
   MARKET = 'MARKET',
