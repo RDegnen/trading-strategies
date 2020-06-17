@@ -31,7 +31,7 @@ describe('MarketMaker Trader', () => {
       method: 'POST',
       params: {
         side: 'BUY',
-        price: 0.00101,
+        price: '0.00101000',
         quantity: 9901,
         symbol: 'VETUSDT',
         type: 'LIMIT',
@@ -83,7 +83,7 @@ describe('MarketMaker Trader', () => {
       method: 'POST',
       params: {
         side: 'SELL',
-        price: 0.001009,
+        price: '0.00100900',
         quantity: 100,
         symbol: 'VETUSDT',
         type: 'LIMIT',

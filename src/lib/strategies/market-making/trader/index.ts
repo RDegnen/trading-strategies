@@ -51,7 +51,7 @@ export default class Trader implements IAccountObserver {
 
   async bid() {
     const [symbolOne, symbolTwo] = this.pair
-    const fundsToRisk = await this.riskManager.caclulateOrderAmount(symbolTwo, .1)
+    const fundsToRisk = await this.riskManager.caclulateOrderAmount(symbolTwo, .25)
     const [price] = this.localOrderBook.book.sides.bids[0]
     const symbolInfo = await this.getSymbolInfo()
     const fn = (priceMove: number) => (temp: number) => temp + priceMove
@@ -60,7 +60,7 @@ export default class Trader implements IAccountObserver {
     })
     if (priceFilter && 'tickSize' in priceFilter) {
       const priceToBidAt = calculateOrderPrice(price, priceFilter, fn(1))
-      const quantityToBidAt = parseInt((fundsToRisk / priceToBidAt).toFixed(0))
+      const quantityToBidAt = parseInt((fundsToRisk / parseFloat(priceToBidAt)).toFixed(0))
     
       console.log(OrderSide.BUY, priceToBidAt, quantityToBidAt, this.pair.join(''))
       this.placeOrder(OrderSide.BUY, priceToBidAt, quantityToBidAt, this.pair.join(''))
@@ -113,7 +113,7 @@ export default class Trader implements IAccountObserver {
     }
   }
 
-  private async placeOrder(side: string, price: number, quantity: number, symbol: string) {
+  private async placeOrder(side: string, price: string, quantity: number, symbol: string) {
     try {
       const res = (await this.httpClient.signedRequest({
         url: '/api/v3/order/test',
