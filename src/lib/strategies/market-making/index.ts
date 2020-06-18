@@ -31,10 +31,11 @@ export default async function marketMaker() {
       httpClient,
       riskManager,
       accountMonitor,
-      ['VET', 'USDT']
+      ['VET', 'USDT'],
+      .25
     )
 
-    trader.bid()
+    trader.bid(1)
   } catch (err) {
     console.log(err)
   }

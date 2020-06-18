@@ -18,21 +18,22 @@ describe('MarketMaker Trader', () => {
     httpClient,
     riskManager,
     accountMonitor,
-    ['VET', 'USDT']
+    ['VET', 'USDT'],
+    .2
   )
 
   it('should place an order when bid is called', async () => {
-    testTrader.bid()
+    testTrader.bid(1)
 
     await sleep(timeout)
 
     expect(httpClient.orderRequests[0]).to.eql({
-      url: '/api/v3/order/test',
+      url: 'test',
       method: 'POST',
       params: {
         side: 'BUY',
         price: '0.00101000',
-        quantity: 9901,
+        quantity: 19802,
         symbol: 'VETUSDT',
         type: 'LIMIT',
         timeInForce: 'GTC'
@@ -79,7 +80,7 @@ describe('MarketMaker Trader', () => {
     await sleep(timeout)
 
     expect(httpClient.orderRequests[1]).to.eql({
-      url: '/api/v3/order/test',
+      url: 'test',
       method: 'POST',
       params: {
         side: 'SELL',
@@ -91,5 +92,42 @@ describe('MarketMaker Trader', () => {
       }
     })
     expect(testTrader['openOrders'][0]).to.eql({ i: 2 })
+  })
+
+  it('should remove an order from open orders when canceled', () => {
+    testTrader.update({
+      e: 'executionReport',
+      E: 1592057073941,
+      s: 'BTCUSD',
+      c: 'web_b574a462730f409fb6b462e2180e55d0',
+      S: 'BUY',
+      o: 'LIMIT',
+      f: 'GTC',
+      q: '0.00116800',
+      p: '9416.1200',
+      P: '0.0000',
+      F: '0.00000000',
+      g: -1,
+      C: null,
+      x: 'FILLED',
+      X: 'FILLED',
+      r: 'NONE',
+      i: 2,
+      l: '0.00000000',
+      z: '0.00000000',
+      L: '0.0000',
+      n: '0',
+      N: null,
+      T: 1592057073940,
+      t: -1,
+      I: 146137176,
+      w: true,
+      m: false,
+      M: false,
+      O: 1592057073940,
+      Z: '0.0000',
+      Y: '0.0000'
+    })
+    expect(testTrader['openOrders'].length).to.equal(0)
   })
 })

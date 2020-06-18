@@ -65,7 +65,6 @@ export default class AccountMonitor implements IAccountSubject {
 
   private onMessage(incomingData: string) {
     const data: IAccountUpdateEvent = JSON.parse(incomingData)
-    console.log(data)
     this.notifyObservers(data)
   }
 }

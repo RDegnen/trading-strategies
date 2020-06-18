@@ -4,7 +4,8 @@
   "description": "",
   "scripts": {
     "watch": "tsc -w",
-    "test": "mocha --require ts-node/register --extensions ts --watch --watch-files src 'tests/**/*.spec.ts'"
+    "test-all": "mocha --require ts-node/register --extensions ts --watch --watch-files src 'tests/**/*.spec.ts' --watch-files tests",
+    "test": "mocha --require ts-node/register --extensions ts --watch --watch-files src"
   },
   "author": "",
   "license": "ISC",

@@ -17,7 +17,7 @@ import {
   BinanceSymbol,
   SymbolPriceFilter
 } from "../../../binance-types"
-import { remove, filter } from "ramda"
+import { remove } from "ramda"
 
 type symbolPair = [string, string]
 type openOrdersType = {
@@ -31,13 +31,15 @@ export default class Trader implements IAccountObserver {
   private accountMonitor: IAccountSubject
   private pair: symbolPair
   private openOrders: openOrdersType[]
+  private riskPercent: number
 
   constructor(
     book: ILocalOrderBook,
     http: IHttpClient,
     riskManager: IRiskManager,
     accountMonitor: IAccountSubject,
-    pair: symbolPair
+    pair: symbolPair,
+    risk: number
   ) {
     this.localOrderBook = book
     this.httpClient = http
@@ -45,13 +47,14 @@ export default class Trader implements IAccountObserver {
     this.accountMonitor = accountMonitor
     this.pair = pair
     this.openOrders = []
+    this.riskPercent = risk
 
     this.accountMonitor.attach(this, AccountEventTypes.ORDER)
   }
 
-  async bid() {
+  async bid(priceMove: number) {
     const [symbolOne, symbolTwo] = this.pair
-    const fundsToRisk = await this.riskManager.caclulateOrderAmount(symbolTwo, .25)
+    const fundsToRisk = await this.riskManager.caclulateOrderAmount(symbolTwo, this.riskPercent)
     const [price] = this.localOrderBook.book.sides.bids[0]
     const symbolInfo = await this.getSymbolInfo()
     const fn = (priceMove: number) => (temp: number) => temp + priceMove
@@ -59,7 +62,7 @@ export default class Trader implements IAccountObserver {
       return filter.filterType === 'PRICE_FILTER'
     })
     if (priceFilter && 'tickSize' in priceFilter) {
-      const priceToBidAt = calculateOrderPrice(price, priceFilter, fn(1))
+      const priceToBidAt = calculateOrderPrice(price, priceFilter, fn(priceMove))
       const quantityToBidAt = parseInt((fundsToRisk / parseFloat(priceToBidAt)).toFixed(0))
     
       console.log(OrderSide.BUY, priceToBidAt, quantityToBidAt, this.pair.join(''))
@@ -101,13 +104,13 @@ export default class Trader implements IAccountObserver {
        if (X === OrderStatus.FILLED) {
         const orderIndex = this.openOrders.findIndex(order => order.i === i)
         if (orderIndex > -1) {
-          const updatedOpenOrders = remove(
-            orderIndex,
-            1,
-            this.openOrders
-          )
-          this.openOrders = updatedOpenOrders
+          this.removeOrderFromOpenOrders(orderIndex)
           this.ask()
+        }
+      } else if (X === OrderStatus.CANCELED) {
+        const orderIndex = this.openOrders.findIndex(order => order.i === i)
+        if (orderIndex > -1) {
+          this.removeOrderFromOpenOrders(orderIndex)
         }
       }
     }
@@ -116,7 +119,7 @@ export default class Trader implements IAccountObserver {
   private async placeOrder(side: string, price: string, quantity: number, symbol: string) {
     try {
       const res = (await this.httpClient.signedRequest({
-        url: '/api/v3/order/test',
+        url: '/api/v3/order',
         method: 'POST',
         params: {
           side,
@@ -132,5 +135,10 @@ export default class Trader implements IAccountObserver {
     } catch (err) {
       console.log(err.response.data)
     }
+  }
+
+  private removeOrderFromOpenOrders(orderIndex: number) {
+    const updatedOpenOrders = remove(orderIndex, 1, this.openOrders)
+    this.openOrders = updatedOpenOrders
   }
 }

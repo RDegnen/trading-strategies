@@ -123,7 +123,10 @@ export default class MockHttpClient implements IHttpClient<any> {
 
         resolve(response)
       } else if (orderUrls.includes(config.url || '')) {
-        this.orderRequests.push(config)
+        this.orderRequests.push({ 
+          ...config,
+          url: 'test' 
+        })
         const response = {
           data: {
             orderId: this.newOrderId,
