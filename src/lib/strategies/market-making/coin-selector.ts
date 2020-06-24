@@ -63,7 +63,6 @@ export default class CoinSelector {
         
     const coinsToTrade: string[] = []
     resolvedCandleStickData.forEach(({ data, symbol }) => {
-      console.log(this.calculateIfChartIsRanging(data, 14), symbol)
       if (this.calculateIfChartIsRanging(data, 14) < 25) {
         coinsToTrade.push(symbol)
       }

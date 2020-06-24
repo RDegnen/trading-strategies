@@ -7,6 +7,7 @@ import { IWebSocketClient, IHttpClient } from '../../src/lib/data/interfaces'
 import MockHttpClient from './mock-http-client'
 import { sleep } from '../helpers/utils'
 import { TestOrderObserver, TestAccountObserver } from './observers'
+import pino from 'pino'
 
 describe('AccountMonitor', () => {
   const timeout = 100
@@ -15,7 +16,8 @@ describe('AccountMonitor', () => {
   const httpClient: IHttpClient = new MockHttpClient()
   const testAccountMonitor = new AccountMonitor(
     httpClient,
-    webSocketClient
+    webSocketClient,
+    pino({ level: 'info' })
   )
 
   it('notifies its order observers', async () => {

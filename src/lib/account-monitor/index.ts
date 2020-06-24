@@ -5,6 +5,7 @@ import {
   IAccountUpdateEvent, 
   AccountEventTypes 
 } from '../types'
+import { Logger } from 'pino'
 
 export default class AccountMonitor implements IAccountSubject {
   private httpClient: IHttpClient
@@ -12,10 +13,12 @@ export default class AccountMonitor implements IAccountSubject {
   private listenKey!: string
   private orderObservers: IAccountObserver[]
   private accountObservers: IAccountObserver[]
+  private logger: Logger
 
-  constructor(http: IHttpClient, ws: IWebSocketClient) {
+  constructor(http: IHttpClient, ws: IWebSocketClient, logger: Logger) {
     this.httpClient = http
     this.socket = ws
+    this.logger = logger
     this.orderObservers = []
     this.accountObservers = []
     this.getListenKey()
@@ -65,6 +68,7 @@ export default class AccountMonitor implements IAccountSubject {
 
   private onMessage(incomingData: string) {
     const data: IAccountUpdateEvent = JSON.parse(incomingData)
+    this.logger.info(data, 'Account Update')
     this.notifyObservers(data)
   }
 }

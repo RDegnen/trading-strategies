@@ -18,6 +18,7 @@ import {
   SymbolPriceFilter
 } from "../../../binance-types"
 import { remove } from "ramda"
+import { Logger } from "pino"
 
 type symbolPair = [string, string]
 type openOrdersType = {
@@ -32,8 +33,10 @@ export default class Trader implements IAccountObserver {
   private pair: symbolPair
   private openOrders: openOrdersType[]
   private riskPercent: number
+  private logger: Logger
 
   constructor(
+    logger: Logger,
     book: ILocalOrderBook,
     http: IHttpClient,
     riskManager: IRiskManager,
@@ -41,6 +44,7 @@ export default class Trader implements IAccountObserver {
     pair: symbolPair,
     risk: number
   ) {
+    this.logger = logger
     this.localOrderBook = book
     this.httpClient = http
     this.riskManager = riskManager
@@ -64,8 +68,6 @@ export default class Trader implements IAccountObserver {
     if (priceFilter && 'tickSize' in priceFilter) {
       const priceToBidAt = calculateOrderPrice(price, priceFilter, fn(priceMove))
       const quantityToBidAt = parseInt((fundsToRisk / parseFloat(priceToBidAt)).toFixed(0))
-    
-      console.log(OrderSide.BUY, priceToBidAt, quantityToBidAt, this.pair.join(''))
       this.placeOrder(OrderSide.BUY, priceToBidAt, quantityToBidAt, this.pair.join(''))
     }
   }
@@ -130,10 +132,10 @@ export default class Trader implements IAccountObserver {
           timeInForce: TimeInForce.GOOD_TILL_CANCELED
         }
       })).data
-      console.log(res)
+      this.logger.info(`Order ${res.orderId} placed. symbol: ${symbol} - side: ${side} - price: ${price} - quantity: ${quantity}`)
       this.openOrders.push({ i: res.orderId })
     } catch (err) {
-      console.log(err.response.data)
+      this.logger.error(err.response.data)
     }
   }
 

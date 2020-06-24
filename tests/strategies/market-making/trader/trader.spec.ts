@@ -6,6 +6,7 @@ import MockAccountMonitor from './mock-account-monitor'
 import MockLocalOrderBook from './mock-local-order-book'
 import Trader from '../../../../src/lib/strategies/market-making/trader'
 import { sleep } from '../../../helpers/utils'
+import pino from 'pino'
 
 describe('MarketMaker Trader', () => {
   const timeout = 100
@@ -14,6 +15,7 @@ describe('MarketMaker Trader', () => {
   const accountMonitor = new MockAccountMonitor()
   const orderBook = new MockLocalOrderBook()
   const testTrader = new Trader(
+    pino({ level: 'silent' }),
     orderBook,
     httpClient,
     riskManager,
