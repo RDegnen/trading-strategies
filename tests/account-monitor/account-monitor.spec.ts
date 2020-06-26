@@ -17,7 +17,7 @@ describe('AccountMonitor', () => {
   const testAccountMonitor = new AccountMonitor(
     httpClient,
     webSocketClient,
-    pino({ level: 'info' })
+    pino({ level: 'silent' })
   )
 
   it('notifies its order observers', async () => {

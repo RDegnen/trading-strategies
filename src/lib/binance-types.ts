@@ -119,10 +119,10 @@ export interface OrderUpdate {
   P: string,             // Stop price
   F: string,             // Iceberg quantity
   g: number,                       // OrderListId
-  C: number | null,                     // Original client order ID; This is the ID of the order being canceled
+  C: number | null,                     // Original client order ID This is the ID of the order being canceled
   x: string,                    // Current execution type
   X: string,                    // Current order status
-  r: string,                   // Order reject reason; will be an error code.
+  r: string,                   // Order reject reason will be an error code.
   i: number,                  // Order ID
   l: string,             // Last executed quantity
   z: string,             // Cumulative filled quantity
@@ -178,11 +178,11 @@ interface NetworkListType {
 
 export type ExchangeFilterType =
 | 'EXCHANGE_MAX_NUM_ORDERS'
-| 'EXCHANGE_MAX_ALGO_ORDERS';
+| 'EXCHANGE_MAX_ALGO_ORDERS'
 
 export interface ExchangeFilter {
-filterType: ExchangeFilterType;
-limit: number;
+filterType: ExchangeFilterType
+limit: number
 }
 
 export type SymbolFilterType =
@@ -191,44 +191,44 @@ export type SymbolFilterType =
 | 'LOT_SIZE'
 | 'MIN_NOTIONAL'
 | 'MAX_NUM_ORDERS'
-| 'MAX_ALGO_ORDERS';
+| 'MAX_ALGO_ORDERS'
 
 export interface SymbolPriceFilter {
   filterType: SymbolFilterType,
-  minPrice: string;
-  maxPrice: string;
-  tickSize: string;
+  minPrice: string
+  maxPrice: string
+  tickSize: string
 }
 
 export interface SymbolPercentPriceFilter {
   filterType: SymbolFilterType,
-  multiplierDown: string;
-  multiplierUp: string;
-  avgPriceMins: number;
+  multiplierDown: string
+  multiplierUp: string
+  avgPriceMins: number
 }
 
 export interface SymbolLotSizeFilter {
   filterType: SymbolFilterType,
-  minQty: string;
-  maxQty: string;
-  stepSize: string;
+  minQty: string
+  maxQty: string
+  stepSize: string
 }
 
 export interface SymbolMinNotionalFilter {
-  applyToMarket: boolean;
-  avgPriceMins: number;
-  filterType: SymbolFilterType;
-  minNotional: string;
+  applyToMarket: boolean
+  avgPriceMins: number
+  filterType: SymbolFilterType
+  minNotional: string
 }
 
 export interface SymbolMaxNumOrdersFilter {
-  filterType: SymbolFilterType;
-  limit: number;
+  filterType: SymbolFilterType
+  limit: number
 }
 
 export interface SymbolMaxAlgoOrdersFilter {
-  filterType: SymbolFilterType;
-  limit: number;
+  filterType: SymbolFilterType
+  limit: number
 }
 
 export type SymbolFilter =
@@ -237,24 +237,24 @@ export type SymbolFilter =
   | SymbolLotSizeFilter
   | SymbolMinNotionalFilter
   | SymbolMaxNumOrdersFilter
-  | SymbolMaxAlgoOrdersFilter;
+  | SymbolMaxAlgoOrdersFilter
 
 export interface BinanceSymbol {
-  baseAsset: string;
-  baseAssetPrecision: number;
-  baseCommissionPrecision: number;
-  filters: SymbolFilter[];
-  icebergAllowed: boolean;
-  isMarginTradingAllowed: boolean;
-  isSpotTradingAllowed: boolean;
-  ocoAllowed: boolean;
-  orderTypes: OrderType[];
-  quoteAsset: string;
-  quoteCommissionPrecision: number;
-  quoteOrderQtyMarketAllowed: boolean;
-  quotePrecision: number;
-  status: string;
-  symbol: string;
+  baseAsset: string
+  baseAssetPrecision: number
+  baseCommissionPrecision: number
+  filters: SymbolFilter[]
+  icebergAllowed: boolean
+  isMarginTradingAllowed: boolean
+  isSpotTradingAllowed: boolean
+  ocoAllowed: boolean
+  orderTypes: OrderType[]
+  quoteAsset: string
+  quoteCommissionPrecision: number
+  quoteOrderQtyMarketAllowed: boolean
+  quotePrecision: number
+  status: string
+  symbol: string
 }
 
 
@@ -304,4 +304,13 @@ export enum TimeInForce {
   GOOD_TILL_CANCELED = 'GTC',
   IMMEDIATE_OR_CANCEL = 'IOC',
   FILL_OR_KILL = 'FOK'
+}
+
+export enum SymbolFilterTypeEnum {
+  PRICE_FILTER = 'PRICE_FILTER',
+  PERCENT_PRICE= 'PERCENT_PRICE',
+  LOT_SIZE = 'LOT_SIZE',
+  MIN_NOTIONAL= 'MIN_NOTIONAL',
+  MAX_NUM_ORDERS = 'MAX_NUM_ORDERS',
+  MAX_ALGO_ORDERS = 'MAX_ALGO_ORDERS'
 }

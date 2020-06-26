@@ -13,8 +13,8 @@ import {
   OrderTypeEnum,
   TimeInForce,
   OrderStatus,
-  OrderStatusType,
   BinanceSymbol,
+  SymbolFilterTypeEnum,
   SymbolPriceFilter
 } from "../../../binance-types"
 import { remove } from "ramda"
@@ -50,41 +50,36 @@ export default class Trader implements IAccountObserver {
     this.riskManager = riskManager
     this.accountMonitor = accountMonitor
     this.pair = pair
-    this.openOrders = []
     this.riskPercent = risk
+    this.openOrders = []
 
     this.accountMonitor.attach(this, AccountEventTypes.ORDER)
   }
 
-  async bid(priceMove: number) {
+  async bid(priceOffset: number) {
     const [symbolOne, symbolTwo] = this.pair
     const fundsToRisk = await this.riskManager.caclulateOrderAmount(symbolTwo, this.riskPercent)
     const [price] = this.localOrderBook.book.sides.bids[0]
-    const symbolInfo = await this.getSymbolInfo()
-    const fn = (priceMove: number) => (temp: number) => temp + priceMove
-    const priceFilter = symbolInfo.filters.find(filter => {
-      return filter.filterType === 'PRICE_FILTER'
-    })
-    if (priceFilter && 'tickSize' in priceFilter) {
-      const priceToBidAt = calculateOrderPrice(price, priceFilter, fn(priceMove))
-      const quantityToBidAt = parseInt((fundsToRisk / parseFloat(priceToBidAt)).toFixed(0))
-      this.placeOrder(OrderSide.BUY, priceToBidAt, quantityToBidAt, this.pair.join(''))
-    }
+    const fn = (priceOffset: number) => (temp: number) => temp + priceOffset
+    const priceToBidAt = calculateOrderPrice(price, await this.getPriceFilter(), fn(priceOffset))
+    const quantityToBidAt = parseInt((fundsToRisk / parseFloat(priceToBidAt)).toFixed(0))
+    this.placeOrder(OrderSide.BUY, priceToBidAt, quantityToBidAt, this.pair.join(''))
   }
 
   async ask() {
     const [symbolOne] = this.pair
     const [price] = this.localOrderBook.book.sides.asks[0]
+    const fn = (priceOffset: number) => (temp: number) => temp - priceOffset
+    const priceToAskFor = calculateOrderPrice(price, await this.getPriceFilter(), fn(1))
+    const quantityToAskFor = await this.riskManager.caclulateOrderAmount(symbolOne, 1)
+    this.placeOrder(OrderSide.SELL, priceToAskFor, quantityToAskFor, this.pair.join(''))
+  }
+
+  private async getPriceFilter(): Promise<SymbolPriceFilter> {
     const symbolInfo = await this.getSymbolInfo()
-    const fn = (priceMove: number) => (temp: number) => temp - priceMove
-    const priceFilter = symbolInfo.filters.find(filter => {
-      return filter.filterType === 'PRICE_FILTER'
-    })
-    if (priceFilter && 'tickSize' in priceFilter) {
-      const priceToAskFor = calculateOrderPrice(price, priceFilter, fn(1))
-      const quantityToAskFor = await this.riskManager.caclulateOrderAmount(symbolOne, 1)
-      this.placeOrder(OrderSide.SELL, priceToAskFor, quantityToAskFor, this.pair.join(''))
-    }
+    return symbolInfo.filters.find(filter => {
+      return filter.filterType === SymbolFilterTypeEnum.PRICE_FILTER
+    }) as SymbolPriceFilter
   }
 
   private async getSymbolInfo(): Promise<BinanceSymbol> {
