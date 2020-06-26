@@ -7,10 +7,13 @@ import MockLocalOrderBook from './mock-local-order-book'
 import Trader from '../../../../src/lib/strategies/market-making/trader'
 import { sleep } from '../../../helpers/utils'
 import pino from 'pino'
+import { BinanceSymbol } from '../../../../src/lib/binance-types'
+import symbolInfoObject from './symbolInfo'
 
 describe('MarketMaker Trader', () => {
   const timeout = 100
   const httpClient = new MockHttpClient()
+  const symoblInfo: BinanceSymbol[] = [symbolInfoObject]
   const riskManager = new RiskManager(httpClient)
   const accountMonitor = new MockAccountMonitor()
   const orderBook = new MockLocalOrderBook()
@@ -20,6 +23,7 @@ describe('MarketMaker Trader', () => {
     httpClient,
     riskManager,
     accountMonitor,
+    symoblInfo,
     ['VET', 'USDT'],
     .2
   )

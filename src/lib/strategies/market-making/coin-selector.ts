@@ -18,6 +18,14 @@ import {
 } from "./types"
 import { IHttpClient } from "../../data/interfaces"
 
+// const selector = new CoinSelector(
+    //   httpClient,
+    //   0.010000,
+    //   50,
+    //   3
+    // )
+    // Could be useful to look for the best spread return (ask/bid - 1 * 100)
+    // const coins = await selector.findCoins()
 export default class CoinSelector {
   httpClient: IHttpClient
   maxBidPrice: number

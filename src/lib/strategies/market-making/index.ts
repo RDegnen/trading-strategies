@@ -6,24 +6,25 @@ import LocalOrderBook from "../../local-order-book"
 import Trader from './trader'
 import AccountMonitor from '../../account-monitor'
 import { Logger } from "pino"
+import { BinanceSymbol } from "../../binance-types"
+import { IHttpClient } from "../../data/interfaces"
+
+async function getExchangeSymbolInfo(httpClient: IHttpClient): Promise<BinanceSymbol[]> {
+  return (await httpClient.request({
+    url: '/api/v3/exchangeInfo'
+  })).data.symbols
+}
 
 export default async function marketMaker(logger: Logger) {
   try {
     const httpClient = new BinanceClient('https://api.binance.us')
+    const exchangeSymbolInfo: BinanceSymbol[] = await getExchangeSymbolInfo(httpClient)
     const riskManager = new RiskManager(httpClient)
     const accountMonitor = new AccountMonitor(
       httpClient,
       new WebSocketClient(),
       logger
     )
-    // const selector = new CoinSelector(
-    //   httpClient,
-    //   0.010000,
-    //   50,
-    //   3
-    // )
-    // Could be useful to look for the best spread return (ask/bid - 1 * 100)
-    // const coins = await selector.findCoins()
 
     const orderBook = new LocalOrderBook(
       new WebSocketClient(),
@@ -37,6 +38,7 @@ export default async function marketMaker(logger: Logger) {
       httpClient,
       riskManager,
       accountMonitor,
+      exchangeSymbolInfo,
       ['VET', 'USDT'],
       .25
     )

@@ -26,14 +26,15 @@ type openOrdersType = {
 }
 
 export default class Trader implements IAccountObserver {
+  private logger: Logger
   private localOrderBook: ILocalOrderBook
   private httpClient: IHttpClient
   private riskManager: IRiskManager
   private accountMonitor: IAccountSubject
+  private exchangeSymbolInfo: BinanceSymbol[]
   private pair: symbolPair
-  private openOrders: openOrdersType[]
   private riskPercent: number
-  private logger: Logger
+  private openOrders: openOrdersType[]
 
   constructor(
     logger: Logger,
@@ -41,6 +42,7 @@ export default class Trader implements IAccountObserver {
     http: IHttpClient,
     riskManager: IRiskManager,
     accountMonitor: IAccountSubject,
+    exchangeSymbolInfo: BinanceSymbol[],
     pair: symbolPair,
     risk: number
   ) {
@@ -49,6 +51,7 @@ export default class Trader implements IAccountObserver {
     this.httpClient = http
     this.riskManager = riskManager
     this.accountMonitor = accountMonitor
+    this.exchangeSymbolInfo = exchangeSymbolInfo
     this.pair = pair
     this.riskPercent = risk
     this.openOrders = []
@@ -61,7 +64,7 @@ export default class Trader implements IAccountObserver {
     const fundsToRisk = await this.riskManager.caclulateOrderAmount(symbolTwo, this.riskPercent)
     const [price] = this.localOrderBook.book.sides.bids[0]
     const fn = (priceOffset: number) => (temp: number) => temp + priceOffset
-    const priceToBidAt = calculateOrderPrice(price, await this.getPriceFilter(), fn(priceOffset))
+    const priceToBidAt = calculateOrderPrice(price, this.getPriceFilter(), fn(priceOffset))
     const quantityToBidAt = parseInt((fundsToRisk / parseFloat(priceToBidAt)).toFixed(0))
     this.placeOrder(OrderSide.BUY, priceToBidAt, quantityToBidAt, this.pair.join(''))
   }
@@ -70,29 +73,26 @@ export default class Trader implements IAccountObserver {
     const [symbolOne] = this.pair
     const [price] = this.localOrderBook.book.sides.asks[0]
     const fn = (priceOffset: number) => (temp: number) => temp - priceOffset
-    const priceToAskFor = calculateOrderPrice(price, await this.getPriceFilter(), fn(1))
+    const priceToAskFor = calculateOrderPrice(price, this.getPriceFilter(), fn(1))
     const quantityToAskFor = await this.riskManager.caclulateOrderAmount(symbolOne, 1)
     this.placeOrder(OrderSide.SELL, priceToAskFor, quantityToAskFor, this.pair.join(''))
   }
 
-  private async getPriceFilter(): Promise<SymbolPriceFilter> {
-    const symbolInfo = await this.getSymbolInfo()
+  private getPriceFilter(): SymbolPriceFilter {
+    const symbolInfo = this.getSymbolInfo()
     return symbolInfo.filters.find(filter => {
       return filter.filterType === SymbolFilterTypeEnum.PRICE_FILTER
     }) as SymbolPriceFilter
   }
 
-  private async getSymbolInfo(): Promise<BinanceSymbol> {
+  private getSymbolInfo(): BinanceSymbol {
     const [symbolOne, symbolTwo] = this.pair
-    const allSymbols = (await this.httpClient.request({
-      url: '/api/v3/exchangeInfo'
-    })).data.symbols
     
-    return allSymbols.find((sym: BinanceSymbol) => {
+    return this.exchangeSymbolInfo.find((sym: BinanceSymbol) => {
       if (sym.baseAsset === symbolOne && sym.quoteAsset === symbolTwo) {
         return sym
       }
-    })
+    }) as BinanceSymbol
   }
 
   async update(data: OrderUpdate) {
@@ -116,7 +116,7 @@ export default class Trader implements IAccountObserver {
   private async placeOrder(side: string, price: string, quantity: number, symbol: string) {
     try {
       const res = (await this.httpClient.signedRequest({
-        url: '/api/v3/order',
+        url: '/api/v3/order/test',
         method: 'POST',
         params: {
           side,
