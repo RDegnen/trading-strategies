@@ -3,8 +3,10 @@
   "version": "0.0.1",
   "description": "",
   "scripts": {
+    "start": "node dist/index.js",
     "start:dev": "node dist/index.js | ./node_modules/.bin/pino-pretty",
-    "watch": "tsc -w",
+    "build": "tsc",
+    "build:watch": "tsc -w",
     "test:all": "mocha --require ts-node/register --extensions ts --watch --watch-files src 'tests/**/*.spec.ts' --watch-files tests",
     "test": "mocha --require ts-node/register --extensions ts --watch --watch-files src"
   },
