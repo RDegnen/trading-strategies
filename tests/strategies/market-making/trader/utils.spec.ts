@@ -1,9 +1,10 @@
 import 'mocha'
 import { expect } from 'chai'
 import { 
-  calculateOrderPrice 
+  calculateOrderPrice,
+  filterOrderQuantity
 } from '../../../../src/lib/strategies/market-making/trader/utils'
-import { SymbolPriceFilter } from '../../../../src/lib/binance-types'
+import { SymbolPriceFilter, SymbolLotSizeFilter } from '../../../../src/lib/binance-types'
 
 describe('MarketMaker Trader utils', () => {
   const bidFn = (priceMove: number) => (temp: number) => temp + priceMove
@@ -37,5 +38,15 @@ describe('MarketMaker Trader utils', () => {
 
     expect(calculateOrderPrice('0.00000002', priceFilter, askFn(1))).to.equal('0.00000001')
     expect(calculateOrderPrice('0.00000010', priceFilter, askFn(1))).to.equal('0.00000009')
+  })
+
+  it('should filter an order quantity', () => {
+    const lotSizeFilter: SymbolLotSizeFilter = {
+      filterType: 'LOT_SIZE',
+      minQty: '1.00000000',
+      maxQty: '90000000.00000000',
+      stepSize: '1.00000000'
+    }
+    expect(filterOrderQuantity(lotSizeFilter, 1200.6)).to.equal(1200)
   })
 })

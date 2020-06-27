@@ -9,7 +9,7 @@ import { Logger } from "pino"
 import { BinanceSymbol } from "../../binance-types"
 import { IHttpClient } from "../../data/interfaces"
 
-async function getExchangeSymbolInfo(httpClient: IHttpClient): Promise<BinanceSymbol[]> {
+const getExchangeSymbolInfo = async (httpClient: IHttpClient): Promise<BinanceSymbol[]> => {
   return (await httpClient.request({
     url: '/api/v3/exchangeInfo'
   })).data.symbols
