@@ -85,21 +85,21 @@ export default class Trader implements IAccountObserver {
     this.placeOrder(OrderSide.SELL, priceToAskFor, quantityToAskFor, this.pair.join(''))
   }
 
-  private getPriceFilter = (): SymbolPriceFilter => {
+  private getPriceFilter (): SymbolPriceFilter {
     const symbolInfo = this.getSymbolInfo()
     return symbolInfo.filters.find(filter => {
       return filter.filterType === SymbolFilterTypeEnum.PRICE_FILTER
     }) as SymbolPriceFilter
   }
 
-  private getLotSizeFilter = (): SymbolLotSizeFilter => {
+  private getLotSizeFilter (): SymbolLotSizeFilter {
     const symbolInfo = this.getSymbolInfo()
     return symbolInfo.filters.find(filter => {
       return filter.filterType === SymbolFilterTypeEnum.LOT_SIZE
     }) as SymbolLotSizeFilter
   }
 
-  private getSymbolInfo = (): BinanceSymbol => {
+  private getSymbolInfo (): BinanceSymbol {
     const [symbolOne, symbolTwo] = this.pair
     
     return this.exchangeSymbolInfo.find((sym: BinanceSymbol) => {
@@ -109,7 +109,7 @@ export default class Trader implements IAccountObserver {
     }) as BinanceSymbol
   }
 
-  update = async (data: OrderUpdate) => {
+  async update (data: OrderUpdate) {
     const { S, X, i, } = data
     if (S === OrderSide.BUY) {
        if (X === OrderStatus.FILLED) {
@@ -126,7 +126,7 @@ export default class Trader implements IAccountObserver {
     }
   }
 
-  private onOrderFilled = (orderId: number, cb: Function) => {
+  private onOrderFilled (orderId: number, cb: Function) {
     const orderIndex = this.openOrders.findIndex(order => order.i === orderId)
     if (orderIndex > -1) {
       this.removeOrderFromOpenOrders(orderIndex)
@@ -134,14 +134,14 @@ export default class Trader implements IAccountObserver {
     }
   }
 
-  private onOrderCanceled = (orderId: number) => {
+  private onOrderCanceled (orderId: number) {
     const orderIndex = this.openOrders.findIndex(order => order.i === orderId)
     if (orderIndex > -1) {
       this.removeOrderFromOpenOrders(orderIndex)
     }
   }
 
-  private placeOrder = async (side: string, price: string, quantity: number, symbol: string) => {
+  private async placeOrder (side: string, price: string, quantity: number, symbol: string) {
     try {
       const res = (await this.httpClient.signedRequest({
         url: '/api/v3/order/test',
@@ -162,7 +162,7 @@ export default class Trader implements IAccountObserver {
     }
   }
 
-  private removeOrderFromOpenOrders = (orderIndex: number) => {
+  private removeOrderFromOpenOrders (orderIndex: number) {
     const updatedOpenOrders = remove(orderIndex, 1, this.openOrders)
     this.openOrders = updatedOpenOrders
   }
