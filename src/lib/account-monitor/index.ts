@@ -1,74 +1,75 @@
 import { IHttpClient, IWebSocketClient } from '../data/interfaces'
 import {
-  IAccountSubject,
-  IAccountObserver,
+  IObserver,
   IAccountUpdateEvent, 
-  AccountEventTypes 
+  AccountEventTypes, 
+  ISubject
 } from '../types'
 import { Logger } from 'pino'
 
-export default class AccountMonitor implements IAccountSubject {
-  private httpClient: IHttpClient
-  private socket: IWebSocketClient 
-  private listenKey!: string
-  private orderObservers: IAccountObserver[]
-  private accountObservers: IAccountObserver[]
-  private logger: Logger
+export default class AccountMonitor 
+  implements ISubject<IObserver<IAccountUpdateEvent>, IAccountUpdateEvent> {
+    private httpClient: IHttpClient
+    private socket: IWebSocketClient 
+    private listenKey!: string
+    private orderObservers: IObserver<IAccountUpdateEvent>[]
+    private accountObservers: IObserver<IAccountUpdateEvent>[]
+    private logger: Logger
 
-  constructor(http: IHttpClient, ws: IWebSocketClient, logger: Logger) {
-    this.httpClient = http
-    this.socket = ws
-    this.logger = logger
-    this.orderObservers = []
-    this.accountObservers = []
-    this.getListenKey()
-    setInterval(this.renewListenKey.bind(this), 1800000)
-  }
-
-  attach(o: IAccountObserver, eventType: string) {
-    if (eventType === AccountEventTypes.ORDER) {
-      this.orderObservers.push(o)
-    } else if (eventType === AccountEventTypes.ACCOUNT) {
-      this.accountObservers.push(o)
+    constructor(http: IHttpClient, ws: IWebSocketClient, logger: Logger) {
+      this.httpClient = http
+      this.socket = ws
+      this.logger = logger
+      this.orderObservers = []
+      this.accountObservers = []
+      this.getListenKey()
+      setInterval(this.renewListenKey.bind(this), 1800000)
     }
-  }
 
-  notifyObservers(event: IAccountUpdateEvent) {
-    if (event.e === 'executionReport') {
-      this.orderObservers.forEach(observer => {
-        observer.update(event)
-      })
-    } else if (event.e === 'outboundAccountInfo' || event.e === 'outboundAccountPosition') {
-      this.accountObservers.forEach(observer => {
-        observer.update(event)
-      })
-    }
-  }
-
-  private async getListenKey() {
-    const { data } = await this.httpClient.keyRequest({
-      url: '/api/v3/userDataStream',
-      method: 'POST'
-    })
-    const listenKey = data.listenKey
-    this.socket.openSocket(`wss://stream.binance.us:9443/ws/${listenKey}`)
-    this.socket.onMessage(this.onMessage.bind(this))
-    this.listenKey = listenKey
-  }
-
-  private renewListenKey() {
-    this.httpClient.keyRequest({
-      url: '/api/v3/userDataStream',
-      method: 'PUT',
-      params: {
-        listenKey: this.listenKey
+    attach(o: IObserver<IAccountUpdateEvent>, eventType: string) {
+      if (eventType === AccountEventTypes.ORDER) {
+        this.orderObservers.push(o)
+      } else if (eventType === AccountEventTypes.ACCOUNT) {
+        this.accountObservers.push(o)
       }
-    })
-  }
+    }
 
-  private onMessage(incomingData: string) {
-    const data: IAccountUpdateEvent = JSON.parse(incomingData)
-    this.logger.info(data, 'Account Update')
-    this.notifyObservers(data)
-  }
+    notifyObservers(event: IAccountUpdateEvent) {
+      if (event.e === 'executionReport') {
+        this.orderObservers.forEach(observer => {
+          observer.update(event)
+        })
+      } else if (event.e === 'outboundAccountInfo' || event.e === 'outboundAccountPosition') {
+        this.accountObservers.forEach(observer => {
+          observer.update(event)
+        })
+      }
+    }
+
+    private async getListenKey() {
+      const { data } = await this.httpClient.keyRequest({
+        url: '/api/v3/userDataStream',
+        method: 'POST'
+      })
+      const listenKey = data.listenKey
+      this.socket.openSocket(`wss://stream.binance.us:9443/ws/${listenKey}`)
+      this.socket.onMessage(this.onMessage.bind(this))
+      this.listenKey = listenKey
+    }
+
+    private renewListenKey() {
+      this.httpClient.keyRequest({
+        url: '/api/v3/userDataStream',
+        method: 'PUT',
+        params: {
+          listenKey: this.listenKey
+        }
+      })
+    }
+
+    private onMessage(incomingData: string) {
+      const data: IAccountUpdateEvent = JSON.parse(incomingData)
+      this.logger.info(data, 'Account Update')
+      this.notifyObservers(data)
+    }
 }

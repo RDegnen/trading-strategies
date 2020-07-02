@@ -2,10 +2,11 @@ import { IHttpClient } from "../../../data/interfaces"
 import { ILocalOrderBook } from '../../../local-order-book'
 import { IRiskManager } from '../../../risk-manager'
 import { calculateOrderPrice, filterOrderQuantity } from './utils'
-import { 
-  IAccountSubject,
-  IAccountObserver,
-  AccountEventTypes
+import {
+  AccountEventTypes,
+  ISubject,
+  IAccountUpdateEvent,
+  IObserver
 } from "../../../types"
 import { 
   OrderUpdate,
@@ -26,12 +27,12 @@ type openOrdersType = {
   i: number
 }
 
-export default class Trader implements IAccountObserver {
+export default class Trader implements IObserver<IAccountUpdateEvent> {
   private logger: Logger
   private localOrderBook: ILocalOrderBook
   private httpClient: IHttpClient
   private riskManager: IRiskManager
-  private accountMonitor: IAccountSubject
+  private accountMonitor: ISubject<IObserver<IAccountUpdateEvent>, IAccountUpdateEvent>
   private exchangeSymbolInfo: BinanceSymbol[]
   private pair: symbolPair
   private riskPercent: number
@@ -42,7 +43,7 @@ export default class Trader implements IAccountObserver {
     book: ILocalOrderBook,
     http: IHttpClient,
     riskManager: IRiskManager,
-    accountMonitor: IAccountSubject,
+    accountMonitor: ISubject<IObserver<IAccountUpdateEvent>, IAccountUpdateEvent>,
     exchangeSymbolInfo: BinanceSymbol[],
     pair: symbolPair,
     risk: number

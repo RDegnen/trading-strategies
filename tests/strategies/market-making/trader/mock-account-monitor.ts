@@ -1,6 +1,7 @@
-import { IAccountSubject } from '../../../../src/lib/types'
+import { ISubject, IObserver, IAccountUpdateEvent } from '../../../../src/lib/types'
 
-export default class MockAccountMonitor implements IAccountSubject {
-  attach() {}
-  notifyObservers() {}
-}
+export default class MockAccountMonitor 
+  implements ISubject<IObserver<IAccountUpdateEvent>, IAccountUpdateEvent> {
+    attach() {}
+    notifyObservers() {}
+  }

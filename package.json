@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "",
   "scripts": {
-    "start": "node dist/index.js 2>&1 > log.txt",
+    "start": "node dist/index.js",
     "start:dev": "node dist/index.js | ./node_modules/.bin/pino-pretty",
     "build": "tsc",
     "build:watch": "tsc -w",

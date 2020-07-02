@@ -6,6 +6,7 @@ import MockWebSocketClient from '../helpers/mock-websocket-client'
 import LocalOrderBook from '../../src/lib/local-order-book'
 import { EventEmitter } from 'events'
 import { sleep } from '../helpers/utils'
+import { TestObserver } from './observers'
 
 describe('LocalOrderBook', () => {
   const timeout = 100
@@ -132,5 +133,27 @@ describe('LocalOrderBook', () => {
 
     expect(askQuantity).to.equal('100')
     expect(bidQuantity).to.equal('100')
+  })
+
+  it('should attatch and notify an observer', () => {
+    const observer = new TestObserver()
+    testOrderBook.attach(observer, '')
+
+    emitter.emit(
+      'data',
+      [
+        JSON.stringify({
+          e: 'depthUpdate',
+          E: 3,
+          s: 'SYMBOL',
+          U: 21,
+          u: 22,
+          b: [['10', '100']],
+          a: [['11', '100']]
+        })
+      ]
+    )
+
+    expect(observer.updateHasBeenCalled).to.eql(true)
   })
 })

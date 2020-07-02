@@ -1,15 +1,19 @@
-export interface IAccountSubject {
-  attach(o: IAccountObserver, eventType: string): void
-  notifyObservers(e: IAccountUpdateEvent): void
-}
-
-export interface IAccountUpdateEvent {
+interface GenericUpdateEvent {
   e: string
 }
 
-export interface IAccountObserver {
-  update(data: IAccountUpdateEvent): void
+export interface ISubject<O, E> {
+  attach(o: O, eventType: string): void
+  notifyObservers(e: E): void
 }
+
+export interface IObserver<E> {
+  update(data: E): void
+}
+
+export interface IAccountUpdateEvent extends GenericUpdateEvent {}
+
+export interface IBookUpdateEvent extends GenericUpdateEvent {}
 
 export enum AccountEventTypes {
   ORDER = 'Order',
