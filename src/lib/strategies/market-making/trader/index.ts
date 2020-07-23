@@ -2,6 +2,7 @@ import { IHttpClient } from "../../../data/interfaces"
 import { ILocalOrderBook } from '../../../local-order-book'
 import { IRiskManager } from '../../../risk-manager'
 import { calculateOrderPrice, filterOrderQuantity } from './utils'
+import OpenOrderManager from './open-order-manager'
 import {
   AccountEventTypes,
   ISubject,
@@ -19,13 +20,9 @@ import {
   SymbolPriceFilter,
   SymbolLotSizeFilter
 } from "../../../binance-types"
-import { remove } from "ramda"
 import { Logger } from "pino"
 
 type symbolPair = [string, string]
-type openOrdersType = {
-  i: number
-}
 
 export default class Trader implements IObserver<IAccountUpdateEvent> {
   private logger: Logger
@@ -36,7 +33,7 @@ export default class Trader implements IObserver<IAccountUpdateEvent> {
   private exchangeSymbolInfo: BinanceSymbol[]
   private pair: symbolPair
   private riskPercent: number
-  private openOrders: openOrdersType[]
+  private openOrderManager: OpenOrderManager
 
   constructor(
     logger: Logger,
@@ -46,7 +43,8 @@ export default class Trader implements IObserver<IAccountUpdateEvent> {
     accountMonitor: ISubject<IObserver<IAccountUpdateEvent>, IAccountUpdateEvent>,
     exchangeSymbolInfo: BinanceSymbol[],
     pair: symbolPair,
-    risk: number
+    risk: number,
+    openOrderManager: OpenOrderManager
   ) {
     this.logger = logger
     this.localOrderBook = book
@@ -56,7 +54,7 @@ export default class Trader implements IObserver<IAccountUpdateEvent> {
     this.exchangeSymbolInfo = exchangeSymbolInfo
     this.pair = pair
     this.riskPercent = risk
-    this.openOrders = []
+    this.openOrderManager = openOrderManager
 
     this.accountMonitor.attach(this, AccountEventTypes.ORDER)
   }
@@ -114,31 +112,18 @@ export default class Trader implements IObserver<IAccountUpdateEvent> {
     const { S, X, i, } = data
     if (S === OrderSide.BUY) {
        if (X === OrderStatus.FILLED) {
-        this.onOrderFilled(i, () => this.ask(1))
+        this.openOrderManager.removeOrder(i)
+        this.ask(1)
       } else if (X === OrderStatus.CANCELED) {
-        this.onOrderCanceled(i)
+        this.openOrderManager.removeOrder(i)
       }
     } else if (S === OrderSide.SELL) {
       if (X === OrderStatus.FILLED) {
-        this.onOrderFilled(i, () => this.bid(1))
+        this.openOrderManager.removeOrder(i)
+        this.bid(1)
       } else if (X === OrderStatus.CANCELED) {
-        this.onOrderCanceled(i)
+        this.openOrderManager.removeOrder(i)
       }
-    }
-  }
-
-  private onOrderFilled (orderId: number, cb: Function) {
-    const orderIndex = this.openOrders.findIndex(order => order.i === orderId)
-    if (orderIndex > -1) {
-      this.removeOrderFromOpenOrders(orderIndex)
-      cb()
-    }
-  }
-
-  private onOrderCanceled (orderId: number) {
-    const orderIndex = this.openOrders.findIndex(order => order.i === orderId)
-    if (orderIndex > -1) {
-      this.removeOrderFromOpenOrders(orderIndex)
     }
   }
 
@@ -157,14 +142,9 @@ export default class Trader implements IObserver<IAccountUpdateEvent> {
         }
       })).data
       this.logger.info(`Order ${res.orderId} placed. symbol: ${symbol} - side: ${side} - price: ${price} - quantity: ${quantity}`)
-      this.openOrders.push({ i: res.orderId })
+      this.openOrderManager.addOrder({ i: res.orderId, side, price, quantity })
     } catch (err) {
       this.logger.error(err.response.data)
     }
-  }
-
-  private removeOrderFromOpenOrders (orderIndex: number) {
-    const updatedOpenOrders = remove(orderIndex, 1, this.openOrders)
-    this.openOrders = updatedOpenOrders
   }
 }
