@@ -8,6 +8,7 @@ import AccountMonitor from '../../account-monitor'
 import { Logger } from "pino"
 import { BinanceSymbol } from "../../binance-types"
 import { IHttpClient } from "../../data/interfaces"
+import OrderManager from "./trader/order-manager"
 
 const getExchangeSymbolInfo = async (httpClient: IHttpClient): Promise<BinanceSymbol[]> => {
   return (await httpClient.request({
@@ -29,8 +30,10 @@ export default async function marketMaker(logger: Logger) {
     const orderBook = new LocalOrderBook(
       new WebSocketClient(),
       httpClient,
-      'VETUSDT'
+      'BTCUSDT'
     )
+
+    const openOrderManager = new OrderManager()
 
     const trader = new Trader(
       logger,
@@ -39,8 +42,9 @@ export default async function marketMaker(logger: Logger) {
       riskManager,
       accountMonitor,
       exchangeSymbolInfo,
-      ['VET', 'USDT'],
-      .25
+      ['BTC', 'USDT'],
+      .25,
+      openOrderManager
     )
 
     trader.bid(1)

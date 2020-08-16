@@ -2,7 +2,7 @@ import { IHttpClient } from "../../../data/interfaces"
 import { ILocalOrderBook } from '../../../local-order-book'
 import { IRiskManager } from '../../../risk-manager'
 import { calculateOrderPrice, filterOrderQuantity } from './utils'
-import OpenOrderManager from './open-order-manager'
+import OrderManager, { OrderStatus as OrderManagerStatus } from './order-manager'
 import {
   AccountEventTypes,
   ISubject,
@@ -33,7 +33,7 @@ export default class Trader implements IObserver<IAccountUpdateEvent> {
   private exchangeSymbolInfo: BinanceSymbol[]
   private pair: symbolPair
   private riskPercent: number
-  private openOrderManager: OpenOrderManager
+  private openOrderManager: OrderManager
 
   constructor(
     logger: Logger,
@@ -44,7 +44,7 @@ export default class Trader implements IObserver<IAccountUpdateEvent> {
     exchangeSymbolInfo: BinanceSymbol[],
     pair: symbolPair,
     risk: number,
-    openOrderManager: OpenOrderManager
+    openOrderManager: OrderManager
   ) {
     this.logger = logger
     this.localOrderBook = book
@@ -112,17 +112,17 @@ export default class Trader implements IObserver<IAccountUpdateEvent> {
     const { S, X, i, } = data
     if (S === OrderSide.BUY) {
        if (X === OrderStatus.FILLED) {
-        this.openOrderManager.removeOrder(i)
+        this.openOrderManager.closeOrder(i)
         this.ask(1)
       } else if (X === OrderStatus.CANCELED) {
-        this.openOrderManager.removeOrder(i)
+        this.openOrderManager.closeOrder(i)
       }
     } else if (S === OrderSide.SELL) {
       if (X === OrderStatus.FILLED) {
-        this.openOrderManager.removeOrder(i)
+        this.openOrderManager.closeOrder(i)
         this.bid(1)
       } else if (X === OrderStatus.CANCELED) {
-        this.openOrderManager.removeOrder(i)
+        this.openOrderManager.closeOrder(i)
       }
     }
   }
@@ -142,7 +142,13 @@ export default class Trader implements IObserver<IAccountUpdateEvent> {
         }
       })).data
       this.logger.info(`Order ${res.orderId} placed. symbol: ${symbol} - side: ${side} - price: ${price} - quantity: ${quantity}`)
-      this.openOrderManager.addOrder({ i: res.orderId, side, price, quantity })
+      this.openOrderManager.addOrder({ 
+        i: res.orderId,
+        side,
+        price,
+        quantity,
+        status: OrderManagerStatus.OPEN
+      })
     } catch (err) {
       this.logger.error(err.response.data)
     }

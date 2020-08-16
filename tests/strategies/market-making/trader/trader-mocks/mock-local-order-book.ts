@@ -1,5 +1,5 @@
-import { ILocalOrderBook } from "../../../../src/lib/local-order-book";
-import Book from "../../../../src/lib/local-order-book/book";
+import { ILocalOrderBook } from "../../../../../src/lib/local-order-book";
+import Book from "../../../../../src/lib/local-order-book/book";
 
 export default class MockLocalOrderBook implements ILocalOrderBook {
   book: Book

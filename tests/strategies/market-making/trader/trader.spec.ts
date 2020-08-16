@@ -2,14 +2,14 @@ import 'mocha'
 import { expect } from 'chai'
 import MockHttpClient from './mock-http-client'
 import RiskManager from '../../../../src/lib/risk-manager'
-import MockAccountMonitor from './mock-account-monitor'
-import MockLocalOrderBook from './mock-local-order-book'
+import MockAccountMonitor from './trader-mocks/mock-account-monitor'
+import MockLocalOrderBook from './trader-mocks/mock-local-order-book'
 import Trader from '../../../../src/lib/strategies/market-making/trader'
 import { sleep } from '../../../helpers/utils'
 import pino from 'pino'
 import { BinanceSymbol } from '../../../../src/lib/binance-types'
 import symbolInfoObject from './symbol-info'
-import OpenOrderManager from '../../../../src/lib/strategies/market-making/trader/open-order-manager'
+import OrderManager from '../../../../src/lib/strategies/market-making/trader/order-manager'
 
 describe('MarketMaker Trader', () => {
   const timeout = 100
@@ -18,7 +18,7 @@ describe('MarketMaker Trader', () => {
   const riskManager = new RiskManager(httpClient)
   const accountMonitor = new MockAccountMonitor()
   const orderBook = new MockLocalOrderBook()
-  const openOrderManager = new OpenOrderManager()
+  const openOrderManager = new OrderManager()
   const testTrader = new Trader(
     pino({ level: 'silent' }),
     orderBook,
@@ -48,7 +48,7 @@ describe('MarketMaker Trader', () => {
         timeInForce: 'GTC'
       }
     })
-    expect(openOrderManager.openOrders[0]).to.eql({ i: 1, side: 'BUY', price: '0.00101000', quantity: 19802 })
+    expect(openOrderManager.orders[0]).to.eql({ i: 1, side: 'BUY', price: '0.00101000', quantity: 19802, status: 'OPEN' })
   })
 
   it('should place a sell order when an open buy order is filled', async () => {
@@ -100,10 +100,10 @@ describe('MarketMaker Trader', () => {
         timeInForce: 'GTC'
       }
     })
-    expect(openOrderManager.openOrders[0]).to.eql({ i: 2, side: 'SELL', price: '0.00100900', quantity: 100 })
+    expect(openOrderManager.orders[1]).to.eql({ i: 2, side: 'SELL', price: '0.00100900', quantity: 100, status: 'OPEN' })
   })
 
-  it('should remove an order from open orders when canceled', () => {
+  it('should close an order when canceled', () => {
     testTrader.update({
       e: 'executionReport',
       E: 1592057073941,
@@ -137,7 +137,7 @@ describe('MarketMaker Trader', () => {
       Z: '0.0000',
       Y: '0.0000'
     })
-    expect(openOrderManager.openOrders.length).to.equal(0)
+    expect(openOrderManager.orders[1].status).to.equal('CLOSED')
   })
 
   it('should place an order when ask is called', async () => {
@@ -157,7 +157,7 @@ describe('MarketMaker Trader', () => {
         timeInForce: 'GTC'
       }
     })
-    expect(openOrderManager.openOrders[0]).to.eql({ i: 3, side: 'SELL', price: '0.00100900', quantity: 100 })
+    expect(openOrderManager.orders[2]).to.eql({ i: 3, side: 'SELL', price: '0.00100900', quantity: 100, status: 'OPEN' })
   })
 
   it('should place a buy order when an open sell order is filled', async () => {
@@ -210,6 +210,6 @@ describe('MarketMaker Trader', () => {
       }
     })
 
-    expect(openOrderManager.openOrders[0]).to.eql({ i: 4, side: 'SELL', price: '0.00100900', quantity: 100 })
+    expect(openOrderManager.orders[3]).to.eql({ i: 4, side: 'SELL', price: '0.00100900', quantity: 100, status: 'OPEN' })
   })
 })
