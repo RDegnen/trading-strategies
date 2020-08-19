@@ -1,8 +1,8 @@
 import { bookType } from '../types'
 import Book from "../../../../../src/lib/local-order-book/book"
-import { IWebSocketClient } from '../../../../../src/lib/data/interfaces'
-import { IObserver, IBookUpdateEvent } from '../../../../../src/lib/types'
-import { DiffDepthStream } from '../../../../../src/lib/binance-types'
+import { IWebSocketClient } from '../../../../../src/lib/data-sources/interfaces'
+import { IObserver, IBookUpdateEvent } from '../../../../../src/lib/types/types'
+import { DiffDepthStream } from '../../../../../src/lib/types/binance-types'
 
 export default class MockLocalOrderBook implements bookType {
   book: Book

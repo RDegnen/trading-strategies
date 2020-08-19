@@ -1,7 +1,7 @@
-import { IWebSocketClient, IHttpClient } from "../data/interfaces"
+import { IWebSocketClient, IHttpClient } from "../data-sources/interfaces"
 import Book from "./book"
-import { DiffDepthStream } from "../binance-types"
-import { ISubject, IBookUpdateEvent, IObserver } from "../types"
+import { DiffDepthStream } from "../types/binance-types"
+import { ISubject, IBookUpdateEvent, IObserver } from "../types/types"
 
 interface IOrderBook {
   lastUpdateId: number,
@@ -16,23 +16,19 @@ export interface ILocalOrderBook {
 export default class LocalOrderBook 
   implements ILocalOrderBook, ISubject<IObserver<IBookUpdateEvent>, IBookUpdateEvent> {
     book!: Book
-    private socket: IWebSocketClient
-    private httpClient: IHttpClient
-    private symbol: string
     private updates: number = 0
-    private observers: IObserver<IBookUpdateEvent>[]
+    private observers: IObserver<IBookUpdateEvent>[] = []
 
     constructor(
-      ws: IWebSocketClient,
-      http: IHttpClient,
-      sym: string
+      private socket: IWebSocketClient,
+      private httpClient: IHttpClient,
+      private symbol: string
     ) {
-      this.socket = ws
-      this.httpClient = http
-      this.symbol = sym
-      this.observers = []
+      this.socket = socket
+      this.httpClient = httpClient
+      this.symbol = symbol
 
-      this.socket.openSocket(`wss://stream.binance.us:9443/ws/${sym.toLocaleLowerCase()}@depth`)
+      this.socket.openSocket(`wss://stream.binance.us:9443/ws/${symbol.toLocaleLowerCase()}@depth`)
       this.socket.onMessage(this.onMessage.bind(this))
       this.createBook()
     }

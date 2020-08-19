@@ -1,4 +1,4 @@
-import { SymbolPriceFilter, SymbolLotSizeFilter } from "../../../binance-types"
+import { SymbolPriceFilter, SymbolLotSizeFilter } from "../../../types/binance-types"
 
 const calculateOrderPrice = (
   currentPrice: string,

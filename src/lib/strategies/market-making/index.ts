@@ -1,13 +1,12 @@
-import CoinSelector from "./coin-selector"
 import RiskManager from "../../risk-manager"
-import BinanceClient from "../../data/binance-client"
-import WebSocketClient from "../../data/websocket-client"
+import BinanceClient from "../../data-sources/binance-client"
+import WebSocketClient from "../../data-sources/websocket-client"
 import LocalOrderBook from "../../local-order-book"
 import Trader from './trader'
 import AccountMonitor from '../../account-monitor'
 import { Logger } from "pino"
-import { BinanceSymbol } from "../../binance-types"
-import { IHttpClient } from "../../data/interfaces"
+import { BinanceSymbol } from "../../types/binance-types"
+import { IHttpClient } from "../../data-sources/interfaces"
 import OrderManager from "./trader/order-manager"
 
 const getExchangeSymbolInfo = async (httpClient: IHttpClient): Promise<BinanceSymbol[]> => {
@@ -15,7 +14,10 @@ const getExchangeSymbolInfo = async (httpClient: IHttpClient): Promise<BinanceSy
     url: '/api/v3/exchangeInfo'
   })).data.symbols
 }
-
+/**
+ * 
+ * Sidelined for now.
+ */
 export default async function marketMaker(logger: Logger) {
   try {
     const httpClient = new BinanceClient('https://api.binance.us')

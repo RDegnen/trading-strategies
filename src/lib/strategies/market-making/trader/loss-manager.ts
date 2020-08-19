@@ -1,8 +1,8 @@
-import { IObserver, IBookUpdateEvent, ISubject } from '../../../types'
+import { IObserver, IBookUpdateEvent, ISubject } from '../../../types/types'
 import { ILocalOrderBook } from '../../../local-order-book'
 import OrderManager, { IOrder } from './order-manager'
-import { IHttpClient } from '../../../data/interfaces'
-import { OrderSide } from '../../../binance-types'
+import { IHttpClient } from '../../../data-sources/interfaces'
+import { OrderSide } from '../../../types/binance-types'
 import { findLast } from 'ramda'
 /**
  * The point of this class is to make an attempt to flat trade if 

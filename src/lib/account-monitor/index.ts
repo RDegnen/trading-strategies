@@ -1,27 +1,26 @@
-import { IHttpClient, IWebSocketClient } from '../data/interfaces'
+import { IHttpClient, IWebSocketClient } from '../data-sources/interfaces'
 import {
   IObserver,
   IAccountUpdateEvent, 
   AccountEventTypes, 
   ISubject
-} from '../types'
+} from '../types/types'
 import { Logger } from 'pino'
 
 export default class AccountMonitor 
   implements ISubject<IObserver<IAccountUpdateEvent>, IAccountUpdateEvent> {
-    private httpClient: IHttpClient
-    private socket: IWebSocketClient 
     private listenKey!: string
-    private orderObservers: IObserver<IAccountUpdateEvent>[]
-    private accountObservers: IObserver<IAccountUpdateEvent>[]
-    private logger: Logger
+    private orderObservers: IObserver<IAccountUpdateEvent>[] = []
+    private accountObservers: IObserver<IAccountUpdateEvent>[] = []
 
-    constructor(http: IHttpClient, ws: IWebSocketClient, logger: Logger) {
-      this.httpClient = http
-      this.socket = ws
+    constructor(
+      private httpClient: IHttpClient,
+      private socket: IWebSocketClient,
+      private logger: Logger
+    ) {
+      this.httpClient = httpClient
+      this.socket = socket
       this.logger = logger
-      this.orderObservers = []
-      this.accountObservers = []
       this.getListenKey()
       setInterval(this.renewListenKey.bind(this), 1800000)
     }

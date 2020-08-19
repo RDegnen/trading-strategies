@@ -4,7 +4,7 @@ import {
   CandleChartResult,
   CandleChartInterval,
   CandleChartArrayResult
-} from "../../binance-types"
+} from "../../types/binance-types"
 import { ADX } from 'technicalindicators'
 import { 
   ADXInput, 
@@ -16,7 +16,7 @@ import {
   TransformedCandleDataInput, 
   TransformedCandleData 
 } from "./types"
-import { IHttpClient } from "../../data/interfaces"
+import { IHttpClient } from "../../data-sources/interfaces"
 
 // const selector = new CoinSelector(
     //   httpClient,

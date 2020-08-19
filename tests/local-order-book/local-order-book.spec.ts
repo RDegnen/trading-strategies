@@ -1,6 +1,6 @@
 import 'mocha'
 import { expect } from 'chai'
-import { IHttpClient, IWebSocketClient } from '../../src/lib/data/interfaces'
+import { IHttpClient, IWebSocketClient } from '../../src/lib/data-sources/interfaces'
 import MockHttpClient from './mock-http-client'
 import MockWebSocketClient from '../helpers/mock-websocket-client'
 import LocalOrderBook from '../../src/lib/local-order-book'

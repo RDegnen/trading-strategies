@@ -1,4 +1,4 @@
-import { IHttpClient } from "../../../data/interfaces"
+import { IHttpClient } from "../../../data-sources/interfaces"
 import { ILocalOrderBook } from '../../../local-order-book'
 import { IRiskManager } from '../../../risk-manager'
 import { calculateOrderPrice, filterOrderQuantity } from './utils'
@@ -8,7 +8,7 @@ import {
   ISubject,
   IAccountUpdateEvent,
   IObserver
-} from "../../../types"
+} from "../../../types/types"
 import { 
   OrderUpdate,
   OrderSide,
@@ -19,7 +19,7 @@ import {
   SymbolFilterTypeEnum,
   SymbolPriceFilter,
   SymbolLotSizeFilter
-} from "../../../binance-types"
+} from "../../../types/binance-types"
 import { Logger } from "pino"
 
 type symbolPair = [string, string]

@@ -1,4 +1,4 @@
-import { BinanceSymbol } from "../../../../src/lib/binance-types";
+import { BinanceSymbol } from "../../../../src/lib/types/binance-types";
 
 export default {
   symbol: 'VETUSDT',

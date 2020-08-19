@@ -7,7 +7,7 @@ import MockLocalOrderBook from './trader-mocks/mock-local-order-book'
 import Trader from '../../../../src/lib/strategies/market-making/trader'
 import { sleep } from '../../../helpers/utils'
 import pino from 'pino'
-import { BinanceSymbol } from '../../../../src/lib/binance-types'
+import { BinanceSymbol } from '../../../../src/lib/types/binance-types'
 import symbolInfoObject from './symbol-info'
 import OrderManager from '../../../../src/lib/strategies/market-making/trader/order-manager'
 

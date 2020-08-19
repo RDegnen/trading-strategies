@@ -5,10 +5,10 @@ import MockLocalOrderBook from './loss-manager-mocks/mock-local-order-book'
 import MockWebSocketClient from '../../../helpers/mock-websocket-client'
 import LossManager from '../../../../src/lib/strategies/market-making/trader/loss-manager'
 import { EventEmitter } from 'events'
-import { IWebSocketClient } from '../../../../src/lib/data/interfaces'
+import { IWebSocketClient } from '../../../../src/lib/data-sources/interfaces'
 import OrderManager from '../../../../src/lib/strategies/market-making/trader/order-manager'
 import { sleep } from '../../../helpers/utils'
-import { OrderSide } from '../../../../src/lib/binance-types'
+import { OrderSide } from '../../../../src/lib/types/binance-types'
 
 describe('MarketMaker Loss Manager', () => {
   const timeout = 100
