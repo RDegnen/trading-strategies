@@ -1,15 +1,13 @@
-import { WalletCurrencyInfo, AccountCoinInfo } from "../binance-types"
-import { IHttpClient } from '../data/interfaces'
+import { WalletCurrencyInfo, AccountCoinInfo } from "../types/binance-types"
+import { IHttpClient } from '../data-sources/interfaces'
 
 export interface IRiskManager {
   caclulateOrderAmount(symbol: string, riskPercent: number): Promise<number>
 }
 
 export default class RiskManager implements IRiskManager {
-  httpClient: IHttpClient
-
-  constructor(http: IHttpClient) {
-    this.httpClient = http
+  constructor(private httpClient: IHttpClient) {
+    this.httpClient = httpClient
   }
 
   async caclulateOrderAmount(symbol: string, riskPercent: number): Promise<number> {

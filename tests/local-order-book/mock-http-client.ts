@@ -1,4 +1,4 @@
-import { IHttpClient } from '../../src/lib/data/interfaces'
+import { IHttpClient } from '../../src/lib/data-sources/interfaces'
 
 export default class MockHttpClient implements IHttpClient<any> {
   request(): Promise<any> {

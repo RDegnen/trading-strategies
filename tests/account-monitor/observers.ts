@@ -1,4 +1,4 @@
-import { IObserver, IAccountUpdateEvent } from "../../src/lib/types";
+import { IObserver, IAccountUpdateEvent } from "../../src/lib/types/types";
 
 export class TestOrderObserver implements IObserver<IAccountUpdateEvent> {
   updateHasBeenCalled: boolean = false

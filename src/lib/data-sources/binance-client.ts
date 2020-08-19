@@ -7,7 +7,7 @@ export default class BinanceClient extends HttpClient {
     return new Promise((resolve, reject) => {
       axios({
         ...config,
-        baseURL: this.BASE,
+        baseURL: this.baseUrl,
         headers: {
           'X-MBX-APIKEY': process.env.BINANCE_US_KEY,
           ...config["headers"]
@@ -34,7 +34,7 @@ export default class BinanceClient extends HttpClient {
 
           axios({
             ...config,
-            baseURL: this.BASE,
+            baseURL: this.baseUrl,
             headers: {
               'X-MBX-APIKEY': process.env.BINANCE_US_KEY,
               ...config["headers"]

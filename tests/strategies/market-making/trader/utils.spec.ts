@@ -4,7 +4,7 @@ import {
   calculateOrderPrice,
   filterOrderQuantity
 } from '../../../../src/lib/strategies/market-making/trader/utils'
-import { SymbolPriceFilter, SymbolLotSizeFilter } from '../../../../src/lib/binance-types'
+import { SymbolPriceFilter, SymbolLotSizeFilter } from '../../../../src/lib/types/binance-types'
 
 describe('MarketMaker Trader utils', () => {
   const bidFn = (priceMove: number) => (temp: number) => temp + priceMove

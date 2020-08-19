@@ -1,4 +1,4 @@
-import { IWebSocketClient } from '../../src/lib/data/interfaces'
+import { IWebSocketClient } from '../../src/lib/data-sources/interfaces'
 import { EventEmitter } from 'events'
 
 export default class MockWebSocketClient implements IWebSocketClient {

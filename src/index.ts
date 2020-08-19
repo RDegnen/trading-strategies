@@ -1,5 +1,4 @@
 require('dotenv').config()
-import marketMaker from "./lib/strategies/market-making"
 import pino from 'pino'
 
 (async function main() {
@@ -9,7 +8,7 @@ import pino from 'pino'
   logger.info('Starting Dodona')
 
   try {
-    await marketMaker(logger)
+    
   } catch (err) {
     logger.error(err)
   }
